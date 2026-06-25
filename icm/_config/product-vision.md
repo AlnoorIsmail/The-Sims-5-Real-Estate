@@ -33,4 +33,4 @@ signals.
 - Do not implement Phaser.
 - Do not implement LangGraph.
 - Do not add ML model calls.
-- Do not invent the teammate's future ROI model contract.
+- Do not change the frozen ROI prediction contract without an explicit v2 update.

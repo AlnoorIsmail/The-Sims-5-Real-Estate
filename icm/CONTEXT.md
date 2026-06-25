@@ -41,7 +41,7 @@ Load only the references named by the active stage. Avoid monolithic context.
 - Demo target: local run plus recorded video.
 - Track: Decision Intelligence.
 - Authority model: resident agents propose; game master adjudicates.
-- ROI: transparent local placeholder until the teammate ML branch defines its
-  integration contract.
+- ROI: transparent local placeholder or ML-backed scorer behind the frozen
+  `roi_prediction.v1` contract in `_config/roi-ml-handoff.md`.
 - Memory: v1 live state is in memory; future persisted character memory must use
   whitelisted tools and fixed app-owned paths.
