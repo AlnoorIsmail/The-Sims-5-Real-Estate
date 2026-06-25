@@ -24,4 +24,3 @@ dist/
 *.log
 .vercel
 *.tsbuildinfo
-challenge-repo/
