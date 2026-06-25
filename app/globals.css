@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles — extend freely. Keep contrast high for the demo projector. */
+@layer base {
+  body {
+    font-feature-settings: "ss01", "cv11";
+  }
+}

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🚀 Submit your project
+    url: https://github.com/abu-dhabi-ai-proptech-challenge/submissions/issues/new/choose
+    about: Project submissions and questions live in the submissions repo — an AI assistant answers questions within minutes.
+  - name: 💬 Discord (fastest during the event)
+    url: https://discord.gg/jy3QDxQ3jK
+    about: Real-time help from the AI assistant, mentors and organizers.
+  - name: 🌐 Event website
+    url: https://challenge.evoost.ai/
+    about: Agenda, registration and everything else.

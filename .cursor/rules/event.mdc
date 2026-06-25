@@ -1,0 +1,37 @@
+---
+description: Abu Dhabi AI PropTech Challenge — event context for every AI request in this project
+alwaysApply: true
+---
+
+# Event context
+
+This project is a hackathon prototype for the **Abu Dhabi AI PropTech Challenge**
+("Building the Intelligence Layer for Land, Investment and Communities") — a
+one-day event. Optimize every suggestion for **demo-by-tonight**, not production.
+
+## What this codebase is
+
+- Next.js 14 (App Router) + TypeScript + Tailwind dashboard.
+- `app/page.tsx` sets the team's track: `land | investment | communities | decision`.
+- `components/DemoPanel.tsx` is the demo heart: input → "Run Prototype" → AI output.
+  The model hook is marked `CONNECT YOUR MODEL HERE`; by default a local mock in
+  `lib/sampleData.ts` answers (no API keys).
+- Real model calls belong in a route handler (`app/api/run/route.ts`) so keys stay
+  server-side; keys go in `.env.local`, never in client code or commits.
+
+## Event data
+
+- Synthetic datasets, joinable on `district`:
+  `sample_parcels`, `sample_investors`, `sample_transactions`, `sample_communities`, `districts` — plus `sample_listings` and `osm_amenities`.
+- GitHub: https://github.com/abu-dhabi-ai-proptech-challenge/starter-kit/tree/main/data
+- Hugging Face mirror: https://huggingface.co/datasets/eVoost/abu-dhabi-ai-proptech-challenge
+- The data is synthetic — never present it as real Abu Dhabi market data.
+
+## How to help this team win
+
+- Bias toward the **single demo path working end to end**; cut scope before adding features.
+- Keep components small and obvious — teammates must understand code they didn't write.
+- When asked for a feature, prefer editing the existing structure over new abstractions.
+- Suggest committing after each working step.
+- Judging rewards: sharp problem framing, working prototype, AI doing real work
+  (not decoration), demo readiness, and credible impact. 3-minute demo, strict.
