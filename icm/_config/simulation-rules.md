@@ -18,10 +18,13 @@ Use a small fixed verb set:
 - `request_repair`
 - `file_complaint`
 - `pay_rent`
+- `skip_rent`
 - `social_interaction`
 - `move_in`
 - `move_out`
 - `idle`
+- `altercate`
+
 
 Add new verbs only when a demo scene cannot be expressed with these.
 

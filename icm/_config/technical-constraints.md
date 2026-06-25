@@ -9,7 +9,7 @@
 
 ## Demo Target
 
-- Optimize for local run plus fallback video.
+- Optimize for local to make an impressive recorded video of it
 - Keep a mock or deterministic fallback so the demo path can run without API
   keys.
 - Prefer one complete vertical slice over broad incomplete systems.
