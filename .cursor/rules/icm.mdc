@@ -1,0 +1,21 @@
+---
+description: ICM context routing for this real estate simulator repo
+alwaysApply: true
+---
+
+# ICM workflow
+
+This repo uses an Interpretable Context Methodology workspace in `icm/`.
+
+Before planning or coding substantial changes, read:
+
+1. `icm/CONTEXT.md` for stage routing.
+2. The relevant `icm/stages/*/CONTEXT.md` for the current task.
+3. Only the `_config` references named by that stage.
+
+Keep the existing event rule in `.cursor/rules/event.mdc` active: this is a
+hackathon prototype, so optimize for one working demo path, not production
+architecture.
+
+ICM is for development context and staged review. It does not replace the app's
+runtime agent harness.
