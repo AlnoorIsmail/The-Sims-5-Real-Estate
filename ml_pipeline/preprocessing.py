@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pandas as pd
 from catboost import CatBoostRegressor
@@ -8,6 +10,15 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBRegressor
+
+
+def _use_gpu() -> bool:
+    return os.environ.get("PROPTECH_USE_GPU", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
 
 def build_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
@@ -52,15 +63,24 @@ def build_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
 
 
 def build_xgb_regressor() -> XGBRegressor:
-    return XGBRegressor(
-        n_estimators=300,
-        max_depth=4,
-        learning_rate=0.05,
-        subsample=0.8,
-        colsample_bytree=0.8,
-        random_state=42,
-        objective="reg:squarederror",
-    )
+    params: dict[str, object] = {
+        "n_estimators": 300,
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "objective": "reg:squarederror",
+    }
+    if _use_gpu():
+        params.update(
+            {
+                "device": "cuda",
+                "tree_method": "hist",
+            }
+        )
+
+    return XGBRegressor(**params)
 
 
 class CatBoostFrameRegressor:
@@ -77,6 +97,12 @@ class CatBoostFrameRegressor:
             "verbose": False,
             "allow_writing_files": False,
         }
+        if _use_gpu():
+            params.update(
+                {
+                    "task_type": "GPU",
+                }
+            )
         params.update(model_params)
         self.model = CatBoostRegressor(**params)
 

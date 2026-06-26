@@ -1,5 +1,5 @@
 {
-  "transaction_price_per_sqm": {
+  "price_per_sqm": {
     "target": "price_per_sqm",
     "model_family": "catboost",
     "model_params": {
@@ -9,7 +9,7 @@
       "l2_leaf_reg": 10.0
     },
     "rows": 5000,
-    "features": [
+    "raw_features": [
       "district",
       "asset_type",
       "size_sqm",
@@ -24,16 +24,18 @@
       "transaction_month",
       "transaction_quarter"
     ],
-    "mae": 1511.1411715012182,
-    "rmse": 2158.2330649912665,
-    "r2": 0.880421478023387
+    "encoded_feature_count": 67,
+    "mae": 1523.7631349343258,
+    "rmse": 2169.6450329850995,
+    "r2": 0.8791535574112483,
+    "max_abs_onnx_diff": 0.01128630647326645
   },
-  "parcel_estimated_value_aed": {
+  "estimated_value_aed": {
     "target": "estimated_value_aed",
     "model_family": "xgboost",
     "model_params": {},
     "rows": 600,
-    "features": [
+    "raw_features": [
       "district",
       "zone",
       "land_use",
@@ -58,11 +60,13 @@
       "amenity_count_community",
       "amenity_count_mobility"
     ],
-    "mae": 10211196.0,
-    "rmse": 19630943.089633163,
-    "r2": 0.8634667992591858
+    "encoded_feature_count": 106,
+    "mae": 9972919.0,
+    "rmse": 19348217.23748542,
+    "r2": 0.8673712015151978,
+    "max_abs_onnx_diff": 44.0
   },
-  "parcel_development_potential_score": {
+  "development_potential_score": {
     "target": "development_potential_score",
     "model_family": "catboost",
     "model_params": {
@@ -72,7 +76,7 @@
       "l2_leaf_reg": 3.0
     },
     "rows": 600,
-    "features": [
+    "raw_features": [
       "district",
       "zone",
       "land_use",
@@ -97,8 +101,10 @@
       "amenity_count_community",
       "amenity_count_mobility"
     ],
-    "mae": 10.371960847355316,
-    "rmse": 13.57751679225111,
-    "r2": -0.049331912540792056
+    "encoded_feature_count": 106,
+    "mae": 11.074278133176417,
+    "rmse": 14.311361923604071,
+    "r2": -0.16582701150781087,
+    "max_abs_onnx_diff": 3.4008809137731077e-06
   }
 }

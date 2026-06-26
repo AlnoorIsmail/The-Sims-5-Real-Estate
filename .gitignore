@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+.proptech_deps/
+.venv/
 __pycache__/
 *.pyc
 
@@ -24,5 +26,8 @@ dist/
 
 # Misc
 *.log
+proptech-ml-*.out
+proptech-ml-*.err
 .vercel
 *.tsbuildinfo
+HPC_Computing_Lab_GUIDE_UGRIP_2025 2.pdf
