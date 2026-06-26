@@ -991,6 +991,7 @@ function renderGameToText(state: SimulatorState) {
     agents: state.agents.map((agent) => ({
       id: agent.id,
       name: agent.name,
+      spriteFolder: agent.spriteFolder,
       locationId: agent.locationId,
       subscriptionLocationId: agent.subscriptionLocationId,
       cell: state.layout.locations[agent.locationId]?.cell,
@@ -1138,13 +1139,15 @@ function drawSimulatorScene(scene: import("phaser").Scene, state: SimulatorState
     const x = agent.visual.x;
     const y = agent.visual.y;
     g.fillStyle(0x000000, 0.28);
-    g.fillEllipse(x + 4, y + 16, 32, 8);
+    g.fillEllipse(x + 4, y + 22, 42, 10);
     g.fillStyle(colorToNumber(agent.color), 1);
-    g.fillCircle(x, y, 13);
-    g.lineStyle(2, 0xffffff, 0.85);
-    g.strokeCircle(x, y, 13);
-    addLabel(x, y + 1, agent.name.slice(0, 1), 12, "#10151b");
-    addLabel(x, y + 28, `${agent.name} - ${agent.statusLabel}`, 10, "#edf2f7");
+    g.fillRoundedRect(x - 11, y - 16, 22, 34, 7);
+    g.fillCircle(x, y - 24, 11);
+    g.lineStyle(2, 0xffffff, 0.82);
+    g.strokeRoundedRect(x - 11, y - 16, 22, 34, 7);
+    g.strokeCircle(x, y - 24, 11);
+    addLabel(x, y - 24, agent.name.slice(0, 1), 11, "#10151b");
+    addLabel(x, y + 32, `${agent.name} - ${agent.statusLabel}`, 10, "#edf2f7");
 
     if (agent.bubble) {
       const bubbleText = agent.bubble.text.length > 42 ? `${agent.bubble.text.slice(0, 39)}...` : agent.bubble.text;
