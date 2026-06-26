@@ -1,57 +1,80 @@
-# Demo Script Skeleton
+# Demo Script
 
-Fill this in and rehearse it — twice, timed. You have **3 minutes**.
+Rehearse this twice, timed. You have **3 minutes**.
 
-> Full demo-day guidance: [submissions repo → demo-day-guide](https://github.com/abu-dhabi-ai-proptech-challenge/submissions/blob/main/docs/demo-day-guide.md)
-
----
-
-## 0:00–0:20 — The problem
-
-> "_____ (who) struggles with _____ (what). Today that means _____ (cost/consequence)."
-
-One sentence on who hurts and how. No team intros, no agenda slide.
-
-## 0:20–0:40 — What we built
-
-> "We built **_____ (project name)** — it _____ (what the AI does) so that _____ (outcome)."
-
-Then stop describing and start showing.
-
-## 0:40–2:20 — Live demo
-
-Walk the core flow, narrating what the AI is doing:
-
-1. Start state: _____________________________________________
-2. Input / action: _________________________________________
-3. What the AI does (say it out loud): _____________________
-4. Output and why it matters: ______________________________
-
-**Pre-demo checklist (do before walking on stage):**
-- [ ] App running, demo tab open, nothing else visible
-- [ ] Data seeded, model warm (run it once backstage)
-- [ ] Fallback recording of this exact flow, one keystroke away
-- [ ] Notifications off, font size up
-
-## 2:20–2:50 — The "aha"
-
-The single moment that makes judges lean in. Plan it deliberately:
-
-> Our "aha" is: ______________________________________________
-
-Examples: a score with a reason a human would respect, a match nobody would have made manually, a question answered with cited sources.
-
-## 2:50–3:00 — Close
-
-> "Today we built _____. With real data, this becomes _____ (one-line vision). Thank you."
+> Full demo-day guidance: [submissions repo -> demo-day-guide](https://github.com/abu-dhabi-ai-proptech-challenge/submissions/blob/main/docs/demo-day-guide.md)
 
 ---
 
-## Q&A prep (up to 2 minutes)
+## 0:00-0:20 - The Problem
 
-Write one-line answers now:
+> "A landlord can miss risk until it becomes complaints, churn, unpaid rent, or
+> emergency spending. We show those consequences before the decision is made."
 
-- **What did you build today vs. before?** ____________________
-- **What happens with 100× the data?** ________________________
-- **Why AI instead of rules?** ________________________________
-- **Who is the first real user?** _____________________________
+No team intro. Start with the operator pain.
+
+## 0:20-0:40 - What We Built
+
+> "We built a Decision Intelligence simulator for real estate operations.
+> Resident agents react to building events, a game master adjudicates the
+> consequences, and the landlord sees reputation, budget, occupancy, and
+> placeholder ROI move together."
+
+Then start showing the app.
+
+## 0:40-2:20 - Live Demo
+
+Walk this exact flow:
+
+1. Start state: fixed-seed 2x3 building, visible residents/prospects, landlord
+   budget, reputation, satisfaction, occupancy, maintenance pressure, and
+   `Placeholder ROI`.
+2. Input/action: open a simulated `maintenance` event card, such as AC,
+   elevator, plumbing, or power strain.
+3. What the AI does: resident agents surface pressure through movement, speech,
+   complaints, rent concern, or prospect hesitation; the game master adjudicates
+   state changes and logs why they happened.
+4. Landlord action: repair, renovate, offer a small incentive, or delay.
+5. Output and why it matters: budget/capital events change, resident-facing
+   metrics move, and the synthetic `Placeholder ROI` proxy updates. Say clearly:
+   "This ROI is a local placeholder, not a trained prediction."
+
+**Pre-demo checklist:**
+
+- [ ] App running locally, demo tab open, nothing else visible.
+- [ ] Fixed seed and event card ready.
+- [ ] Mock/deterministic mode ready if Chroma, Gemini, or provider keys fail.
+- [ ] Fallback recording of this exact flow ready.
+- [ ] Notifications off, font size readable.
+- [ ] `Placeholder ROI` label visible anywhere ROI appears.
+
+## 2:20-2:50 - The Aha
+
+> "The useful part is not one score. It is seeing one landlord decision ripple
+> through people and business metrics at the same time: cash cost now,
+> maintenance pressure down, residents calmer, reputation protected, and churn
+> risk lower."
+
+Judging narrative: this is Decision Intelligence because agents make hidden
+resident pressure visible before the operator commits money.
+
+## 2:50-3:00 - Close
+
+> "Today this runs locally with synthetic scenario events and placeholder ROI.
+> With the teammate ML branch, the ROI boundary can become trained investment
+> modeling while the same simulation loop stays in place. Thank you."
+
+---
+
+## Q&A Prep
+
+- **What did you build today vs. before?** A local decision simulator foundation
+  with a locked demo story, visible agent loop, and honest placeholder metrics.
+- **What happens with 100x the data?** The future ML branch can replace the
+  placeholder ROI proxy with trained models behind the same ROI boundary.
+- **Why AI instead of rules?** Agents make varied resident/prospect reactions
+  visible; the deterministic engine keeps outcomes auditable.
+- **Who is the first real user?** A landlord, asset manager, or property
+  operator responsible for a multi-unit residential building.
+- **Is the ROI trained?** No. It is explicitly placeholder/synthetic until the
+  teammate ML integration lands.
