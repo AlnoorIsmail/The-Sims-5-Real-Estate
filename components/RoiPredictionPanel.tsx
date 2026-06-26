@@ -140,6 +140,18 @@ function toUserWarning(warning: string) {
     return "The estimated value is below your total cost.";
   }
 
+  if (normalized.includes("unrealistic size")) {
+    return "The property size is too small for a normal buy recommendation.";
+  }
+
+  if (normalized.includes("small size")) {
+    return "The property size is unusually small, so the result is capped.";
+  }
+
+  if (normalized.includes("size check")) {
+    return "The estimated value was adjusted to fit the property size you entered.";
+  }
+
   if (normalized.includes("negative npv")) {
     return "The long-term cash flow estimate is negative.";
   }

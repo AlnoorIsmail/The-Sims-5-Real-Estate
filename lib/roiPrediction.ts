@@ -196,6 +196,64 @@ function recommendationFor(score: number, marginAed: number): Recommendation {
   return "DO NOT BUY";
 }
 
+function applyInputGuardrails(
+  form: RoiFormState,
+  result: RoiPredictionOutputV1
+): RoiPredictionOutputV1 {
+  const propertySize = Number(form.propertySizeSqm);
+  const totalCost =
+    Math.max(0, form.acquisitionCostAed) + Math.max(0, form.developmentCostAed);
+  const warnings = [...result.warnings];
+  let predictedValue = result.predicted_estimated_value_aed;
+  let score = result.success_score;
+
+  if (Number.isFinite(propertySize) && propertySize > 0) {
+    const sizeBasedValue = result.predicted_price_per_sqm * propertySize;
+    const maxReasonableValue = sizeBasedValue * 1.15;
+
+    if (
+      Number.isFinite(maxReasonableValue) &&
+      maxReasonableValue > 0 &&
+      predictedValue > maxReasonableValue
+    ) {
+      predictedValue = maxReasonableValue;
+      warnings.push(
+        "Size check warning: estimated value was adjusted to match the entered property size."
+      );
+    }
+
+    if (propertySize < 20) {
+      score = Math.min(score, 20);
+      warnings.push(
+        "Unrealistic size warning: property size is too small for a normal buy recommendation."
+      );
+    } else if (propertySize < 30) {
+      score = Math.min(score, 45);
+      warnings.push(
+        "Small size warning: property size is unusually small, so the recommendation is capped."
+      );
+    }
+  }
+
+  const marginAed = predictedValue - totalCost;
+  const marginPct = totalCost > 0 ? (marginAed / totalCost) * 100 : 0;
+
+  if (marginAed < 0) {
+    warnings.push("Negative margin warning: predicted value is below total cost.");
+  }
+
+  return {
+    ...result,
+    recommendation: recommendationFor(score, marginAed),
+    success_score: Number(clamp(score).toFixed(2)),
+    predicted_estimated_value_aed: Number(predictedValue.toFixed(2)),
+    total_cost_aed: Number(totalCost.toFixed(2)),
+    margin_aed: Number(marginAed.toFixed(2)),
+    margin_pct: Number(marginPct.toFixed(2)),
+    warnings: Array.from(new Set(warnings)),
+  };
+}
+
 export function buildRoiPredictionInput(
   form: RoiFormState
 ): RoiPredictionInputV1 {
@@ -286,10 +344,10 @@ export async function predictRoiFromForm(
 ): Promise<RoiPredictionOutputV1> {
   try {
     const onnxResult = await predictRoiWithOnnx(buildModelScoringInput(form));
-    return withContractVersion(onnxResult.decision);
+    return applyInputGuardrails(form, withContractVersion(onnxResult.decision));
   } catch (error) {
     const fallback = await predictRoi(buildRoiPredictionInput(form));
-    return {
+    return applyInputGuardrails(form, {
       ...fallback,
       warnings: [
         `Model bundle fallback warning: ${
@@ -297,7 +355,7 @@ export async function predictRoiFromForm(
         }`,
         ...fallback.warnings,
       ],
-    };
+    });
   }
 }
 
