@@ -10,13 +10,13 @@ const TRACK_COPY: Record<Track, string> = {
 const CHECK_CARDS = [
   {
     label: "Value check",
-    title: "What could it be worth?",
-    detail: "Compares the property details with the selected area and property type.",
+    title: "What is it predicted to be worth?",
+    detail: "Predicts market value from the property details, area, and property type.",
   },
   {
     label: "Profit check",
     title: "Is there room after costs?",
-    detail: "Looks at purchase cost, development cost, estimated value, and margin.",
+    detail: "Uses predicted value minus your purchase and development costs.",
   },
   {
     label: "Risk check",
@@ -27,7 +27,7 @@ const CHECK_CARDS = [
 
 const RESULT_ITEMS = [
   "A clear buy, review, or avoid recommendation",
-  "Estimated value and profit",
+  "Predicted value and estimated profit",
   "Confidence score out of 100",
   "Main factors behind the answer",
   "Warnings to review before making a real decision",
@@ -104,7 +104,7 @@ export default function DemoPanel({ track }: { track: Track }) {
             <LogicStep
               index="2"
               title="Review the numbers"
-              text="Check the estimated value, expected profit, score, and the main factors behind the answer."
+              text="Check the predicted value, estimated profit, score, and the main factors behind the answer."
             />
             <LogicStep
               index="3"

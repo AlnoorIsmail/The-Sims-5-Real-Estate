@@ -2,7 +2,7 @@ import TrackBadge, { type Track } from "./TrackBadge";
 
 const PROJECT_NAME = "The Sims 5 Real Estate";
 const PROJECT_PITCH =
-  "Is this property worth buying? Enter the area, property type, size, and costs to estimate value, likely upside, and the main things to check before you decide.";
+  "Is this property worth buying? Enter the area, property type, size, and costs to see predicted value, likely upside, and the main things to check before you decide.";
 
 export default function Hero({ track }: { track: Track }) {
   return (

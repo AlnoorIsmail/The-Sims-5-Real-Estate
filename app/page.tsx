@@ -94,8 +94,9 @@ export default function Home() {
         </div>
 
         <footer className="mt-12 border-t border-[#d9d2c4] pt-6 text-xs text-[#718078]">
-          Estimates are for early screening only. Review the numbers with a
-          qualified advisor before making a real purchase.
+          Predicted values and estimated profits are for early screening only.
+          Review the numbers with a qualified advisor before making a real
+          purchase.
         </footer>
       </div>
     </main>

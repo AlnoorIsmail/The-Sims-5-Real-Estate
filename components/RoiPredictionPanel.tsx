@@ -112,14 +112,14 @@ function getPlainReason(result: RoiPredictionOutputV1) {
   const profit = formatCompactMoney(result.margin_aed);
 
   if (result.recommendation === "BUY") {
-    return `This looks attractive: estimated value is ${value}, with about ${profit} of room above your total cost (${margin}).`;
+    return `This looks attractive: predicted value is ${value}, with about ${profit} of estimated room above your total cost (${margin}).`;
   }
 
   if (result.recommendation === "CONSIDER") {
-    return `This may be worth a closer look: estimated value is ${value}, with about ${profit} of room above your total cost (${margin}).`;
+    return `This may be worth a closer look: predicted value is ${value}, with about ${profit} of estimated room above your total cost (${margin}).`;
   }
 
-  return `This does not look strong enough right now: estimated value is ${value}, with about ${profit} of room against your total cost (${margin}).`;
+  return `This does not look strong enough right now: predicted value is ${value}, with about ${profit} of estimated room against your total cost (${margin}).`;
 }
 
 function toUserWarning(warning: string) {
@@ -137,7 +137,7 @@ function toUserWarning(warning: string) {
   }
 
   if (normalized.includes("negative margin")) {
-    return "The estimated value is below your total cost.";
+    return "The predicted value is below your total cost.";
   }
 
   if (normalized.includes("unrealistic size")) {
@@ -149,7 +149,7 @@ function toUserWarning(warning: string) {
   }
 
   if (normalized.includes("size check")) {
-    return "The estimated value was adjusted to fit the property size you entered.";
+    return "The predicted value was adjusted to fit the property size you entered.";
   }
 
   if (normalized.includes("negative npv")) {
@@ -269,7 +269,7 @@ function ScoreGauge({ result }: { result: RoiPredictionOutputV1 }) {
             {recommendationCopy[result.recommendation]}
           </div>
           <h3 className="mt-3 text-base font-semibold text-[#17201f]">
-            Buy confidence
+            Buy confidence from prediction
           </h3>
           <p className="mt-1 text-sm leading-relaxed text-[#5b6661]">
             {getPlainReason(result)}
@@ -495,23 +495,28 @@ export default function RoiPredictionPanel() {
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <StatTile
-          label="Estimated value"
+          label="Predicted value"
           value={formatCompactMoney(visibleResult.predicted_estimated_value_aed)}
-          hint={formatMoney(visibleResult.predicted_estimated_value_aed)}
+          hint={`Model estimate: ${formatMoney(
+            visibleResult.predicted_estimated_value_aed
+          )}`}
         />
         <StatTile
           label="Estimated profit"
           value={formatCompactMoney(visibleResult.margin_aed)}
-          hint={formatPercent(visibleResult.margin_pct)}
+          hint={`Predicted value minus your costs: ${formatPercent(
+            visibleResult.margin_pct
+          )}`}
         />
         <StatTile
-          label="Estimated price / sqm"
+          label="Predicted price / sqm"
           value={formatMoney(visibleResult.predicted_price_per_sqm)}
+          hint="Model estimate"
         />
         <StatTile
           label="Total cost"
           value={formatCompactMoney(visibleResult.total_cost_aed)}
-          hint={formatMoney(visibleResult.total_cost_aed)}
+          hint={`Your inputs: ${formatMoney(visibleResult.total_cost_aed)}`}
         />
       </div>
 
@@ -522,7 +527,7 @@ export default function RoiPredictionPanel() {
               What affects the answer
             </p>
             <p className="text-xs text-[#718078]">
-              The main factors behind the recommendation.
+              Predicted market value plus your entered costs.
             </p>
           </div>
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${style.track} ${style.text}`}>
@@ -539,7 +544,7 @@ export default function RoiPredictionPanel() {
             track="bg-[#deece7]"
           />
           <DriverBar
-            label="Development upside"
+            label="Predicted development upside"
             value={driverValues.potential}
             tone="bg-[#6f7f9b]"
             track="bg-[#e5e9f0]"
