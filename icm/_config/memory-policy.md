@@ -27,8 +27,8 @@ Store document text plus metadata:
 
 - `memoryType`: episodic, semantic, relationship, reflection, news, summary
 - `day`
-- `block`
-- `location`
+- `locationId`
+- `locationType`: room, hall, stair, lobby, exterior, door, global
 - `participants`
 - `tags`
 - `importance`
@@ -56,9 +56,11 @@ whole event log.
 When an event resolves:
 
 - direct participants write subjective memories
-- agents in the same map block write perceived memories
+- agents in the same generated location write perceived memories
+- hall subscribers can write muffled perceived memories for public speech from
+  adjacent rooms
 - global game-master events write to all relevant agents and `gm_world_memory`
-- agents outside the block do not learn local events unless later told
+- agents outside the location do not learn local events unless later told
 
 Memory is written after validation and resolution, not when an agent merely
 intends an action.
@@ -85,8 +87,8 @@ goal, target, location, and recent events.
 Prefer metadata filters for:
 
 - actor or participant
-- block
-- location
+- location id
+- location type
 - day range
 - memory type
 - tags

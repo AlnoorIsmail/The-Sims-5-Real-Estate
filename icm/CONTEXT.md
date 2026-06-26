@@ -35,6 +35,7 @@ the app code.
 - `_config/agent-architecture.md`
 - `_config/character-archetypes.md`
 - `_config/game-master-events.md`
+- `_config/building-navigation.md`
 
 Load only the references named by the active stage. Avoid monolithic context.
 
@@ -48,3 +49,5 @@ Load only the references named by the active stage. Avoid monolithic context.
   integration contract.
 - Memory: local Chroma OSS with Gemini embeddings, one collection per character
   and one game-master collection.
+- Building: fixed-camera generated side-cutaway, default 2 floors by 3 units,
+  configurable to 2-4 floors by 2-5 units, with A* endpoint movement.

@@ -11,6 +11,7 @@ Define the provider-neutral LLM harness around the deterministic engine.
 | Layer 3 | `../../_config/agent-architecture.md` | Agent class hierarchy |
 | Layer 3 | `../../_config/character-archetypes.md` | Sprite/persona rules |
 | Layer 3 | `../../_config/game-master-events.md` | GM daily events and news seam |
+| Layer 3 | `../../_config/building-navigation.md` | Endpoint movement and generated location subscriptions |
 | Layer 3 | `../../_config/technical-constraints.md` | Next.js and provider-neutral boundary |
 | Layer 3 | `../../_config/tone-safety.md` | Prompt and adjudication boundaries |
 | Layer 4 | `../02_data_state_model/output/state-model.md` | State available to agents |
@@ -32,6 +33,13 @@ Specify a LangGraph.js-style harness without committing to a provider:
   signals, global publication, adjudication, and daily summary
 - resident/prospect agents receive scoped state, persona, needs, and allowed
   tools
+- resident/prospect agents request endpoints only; they do not generate paths,
+  waypoints, stair traversal, or pixel coordinates
+- `move_to` endpoints are grouped as visible characters, rooms, static
+  locations, and doors
+- character-target movement is dynamic and can replan outside the agent prompt
+- landlord `budgetAed` appears in context only when relevant to landlord-facing
+  or budget-affecting actions
 - the runtime assembles an `AgentContextBundle` per actor using system rules,
   identity, visible world state, relationships, retrieved memories,
   reflections, recent local events, available actions, and JSON schema
@@ -46,7 +54,8 @@ Specify a LangGraph.js-style harness without committing to a provider:
 - the game master receives proposals, current state, landlord input, recent
   events, and relevant Chroma memories
 - the game master adjudicates consequences and calls the deterministic engine
-- same-block pub/sub determines what agents perceive and remember
+- generated location subscriptions determine what agents perceive and remember
+- hall subscribers can receive muffled room-originated public speech
 - model calls can stream story/chat events to the UI
 - mock mode can bypass LLMs with deterministic proposals
 
@@ -65,11 +74,13 @@ Write to `output/agent-harness-spec.md`:
 - `AgentContextBundle` assembly rules
 - tool list and schemas at a high level
 - message flow
-- pub/sub perception flow
+- generated location perception flow
+- mock autonomy movement proposal flow
 - game-master daily brief and summary flow
 - mock fallback behavior
 - provider boundary
 - human/landlord input path
+- landlord budget context and budget mutation boundary
 
 ## Verify
 
@@ -77,10 +88,11 @@ Write to `output/agent-harness-spec.md`:
 - `request_repair`, `file_complaint`, `pay_rent`, and `skip_rent` target
   `LandlordAgent`, not the game master directly.
 - The game master remains the only adjudicator.
+- Agents cannot mutate landlord `budgetAed`.
 - Retrieved context includes relevant relationship/event memory without loading
   the whole event log.
 - Per-agent Chroma collections preserve subjective memory isolation.
-- GM/global events bypass map blocks; local events do not.
+- GM/global events bypass generated location limits; local events do not.
 - The harness can run with mocks for demo safety.
 - Mock mode works without Chroma/Gemini running.
 - A landlord action-card timeout creates a no-action event for game-master

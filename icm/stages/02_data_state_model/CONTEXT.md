@@ -13,6 +13,7 @@ Define the minimum state needed for the simulator and UI.
 | Layer 3 | `../../_config/agent-architecture.md` | Agent class responsibilities |
 | Layer 3 | `../../_config/character-archetypes.md` | Sprite/persona seed rules |
 | Layer 3 | `../../_config/game-master-events.md` | Event-card shape |
+| Layer 3 | `../../_config/building-navigation.md` | Generated building, locations, and pathfinding |
 | Layer 4 | `../01_product_brief/output/product-brief.md` | Locked demo path |
 | Layer 4 | `../../../challenge-repo/docs/datasets.md` | Synthetic data columns and caveats |
 
@@ -21,9 +22,10 @@ Define the minimum state needed for the simulator and UI.
 Specify plain TypeScript-friendly data shapes for:
 
 - building configuration
-- units/floors/locations
+- generated floors, units, room templates, halls, stairs, doors, and locations
 - residents and prospective residents
 - landlord/player state
+- landlord starting budget, current `budgetAed`, and capital event state
 - agent class state for `Agent`, `CharacterAgent`, `LandlordAgent`, and
   `GameMasterAgent`
 - landlord request queue, compact action-card state, timeout/default state, and
@@ -31,8 +33,10 @@ Specify plain TypeScript-friendly data shapes for:
 - sprite archetype, gender mapping, and persona-card seed state
 - relationships and satisfaction
 - events and incidents
-- four-block map subscription state
+- generated location subscription state
 - atomic action queue and busy/available state
+- A* path request/result state, dynamic target movement state, and reachable
+  fallback state
 - memory layers: immediate context, episodic memory, semantic/pinned memory,
   relationship memory, reflection memory, and working agent state
 - Chroma collection names and memory record metadata
@@ -40,6 +44,9 @@ Specify plain TypeScript-friendly data shapes for:
 - game-master event-card state and daily summary state
 - validated action proposals
 - action target types: location, character, landlord, lifecycle, none
+- renovation actions for selected units and floors
+- budget-affecting event fields for rent, skipped rent, renovation,
+  maintenance, move-in/out, and game-master incidents
 - simulation tick state
 - placeholder ROI inputs and output
 
@@ -53,6 +60,7 @@ Write to `output/state-model.md`:
 
 - entity list
 - field list with types and meaning
+- generated building and navigation field list
 - memory layer ownership and reason to exist
 - Chroma collection and metadata field list
 - `AgentContextBundle` shape
@@ -66,6 +74,14 @@ Write to `output/state-model.md`:
 - Every action in the v1 vocabulary has enough state to validate it.
 - Landlord-facing actions have enough state to render one action card and
   return one user response or timeout.
+- Generated locations can represent rooms, halls, stairs, lobby, exterior, and
+  doors.
+- A visitor can target another resident's unit; locked or denied access resolves
+  to the door unless permission or adjudication allows entry.
+- `move_to(roomId)` defaults to room entry unless access rules resolve it to a
+  door.
+- `move_to(characterId)` has enough state for live replanning.
+- Landlord `budgetAed` has a clear source for every change.
 - Every memory layer has one owner and one reason to exist.
 - Old events can be stored without being dumped wholesale into prompts.
 - Chroma memory is isolated per agent except for game-master global memory.

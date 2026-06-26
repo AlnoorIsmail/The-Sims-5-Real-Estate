@@ -22,7 +22,8 @@ Use 12 curated hardcoded cards for the demo:
 Each card should define:
 
 - `id`
-- `scope`: global, building, block, or character-targeted
+- `scope`: global, building, generated-location, or character-targeted
+- optional `locationId` and `locationType`
 - `tags`
 - affected metrics
 - public text for the feed
@@ -38,5 +39,5 @@ For the demo, use hardcoded cards and label them as simulated scenario events.
 
 ## Publication
 
-Game-master/global events bypass map blocks. Local events use the four-block
-subscription model from `simulation-rules.md`.
+Game-master/global events bypass generated location limits. Local events use
+the generated location subscription model from `simulation-rules.md`.

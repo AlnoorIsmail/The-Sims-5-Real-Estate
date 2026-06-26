@@ -15,7 +15,7 @@ It does not puppet normal resident behavior.
 
 Use a small fixed verb set:
 
-- `move_to`: targets a location or character endpoint; includes `speed: "walk" | "run"`
+- `move_to`: targets a character, room, generated location, or door endpoint; includes `speed: "walk" | "run"`
 - `say_to`: targets a character; may include `interrupt: true`
 - `request_repair`: targets `LandlordAgent`
 - `file_complaint`: targets `LandlordAgent`
@@ -23,7 +23,7 @@ Use a small fixed verb set:
 - `skip_rent`: targets `LandlordAgent`
 - `move_in`: landlord-mediated lifecycle action
 - `move_out`: landlord-mediated lifecycle action
-- `altercate`: targets a character and escalates to game-master adjudication
+- `altercate`: targets a character or door and escalates to game-master adjudication
 - `idle`: explicit no-op or wait
 
 
@@ -45,6 +45,11 @@ These character actions target `LandlordAgent` directly:
 `move_in` and `move_out` are landlord-mediated: residents or prospects can
 request them, but approval, vacancy, cost, and consequences are resolved through
 the landlord/game-master flow.
+
+The landlord has a run-scoped `budgetAed` chosen before simulation start. The
+simulation engine owns this value. Rent payments increase it after validation;
+renovations, maintenance, lifecycle costs, skipped rent, and adjudicated
+incidents change it through validated state deltas.
 
 ## Landlord Request Queue
 
@@ -76,16 +81,65 @@ game master applies consequences.
 - Day close stops new actions, lets the active action finish, then asks the game
   master for a summary.
 
-## Four-block Pub/Sub
+## Generated Location Pub/Sub
 
-Divide the visible map into four blocks. Agents subscribe to the block where
-their Phaser character currently stands.
+Use generated building locations for local perception. Agents subscribe to the
+generated location where their Phaser character currently stands.
 
-- same-block agents hear and see local public actions
+V1 location types are:
+
+- `room`
+- `hall`
+- `stair`
+- `lobby`
+- `exterior`
+- `door`
+
+Publication rules:
+
+- same-location agents hear and see local public actions
+- hall subscribers can hear public speech from adjacent rooms as muffled text
 - direct targets always receive targeted actions
-- game-master/global events bypass block limits
+- game-master/global events bypass location limits
 - moving intent does not update subscription
 - `move_to` updates subscription only after Phaser movement completes
+
+Muffled text should be slightly degraded but still understandable enough to
+support story and memory. It is a perception effect, not a security boundary.
+
+## Generated Building Movement
+
+The first Phaser slice uses a fixed-camera side-cutaway apartment grid generated
+from `floors x unitsPerFloor`.
+
+- default: 2 floors by 3 units
+- UI range: 2-4 floors by 2-5 units
+- one tenant per unit
+- three same-size studio templates: basic, cluttered, premium
+- furniture is decorative only
+- walls, doors, floor edges, and stair links constrain movement
+
+For `m` room columns, generate `m - 1` internal stair shafts. Stairs connect
+floors through explicit pathfinder links. Agents request endpoints; the
+pathfinder owns waypoints.
+
+`move_to(roomId)` enters the room by default. If the room door is locked and the
+actor is not the owner, invited, permitted, or adjudicated through escalation,
+the target resolves to the room door.
+
+`move_to(characterId)` follows the target character's current reachable
+interaction point. A* must replan when the target changes cell or location, or
+when the active path becomes stale. Arrival means reaching an interaction cell,
+not occupying the same cell.
+
+`move_to(locationId | doorId)` targets a static generated endpoint. Static paths
+compute once unless layout or door access changes.
+
+`altercate` may target a door, but forced entry requires game-master
+adjudication before the room interior becomes reachable.
+
+If an endpoint is unreachable, log an unreachable-target event and move to the
+nearest safe reachable node.
 
 ## Atomic Actions
 
@@ -106,6 +160,7 @@ according to context, mood, and relationship memory.
 - rent/payment reliability
 - maintenance pressure
 - incident severity
+- landlord budget
 - placeholder ROI
 
 ## Determinism

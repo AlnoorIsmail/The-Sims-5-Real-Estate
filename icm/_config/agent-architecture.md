@@ -26,13 +26,18 @@ The base class never mutates authoritative world state.
 - persona cards and psychology modifiers
 - visible world-state observation
 - action proposal from the fixed verb set
-- Phaser endpoint tools such as `move_to(locationId | characterId, speed)` and
+- Phaser endpoint tools such as
+  `move_to(characterId | roomId | locationId | doorId, speed)` and
   `say_to(agentId, message, interrupt?)`
 - action vocabulary for endpoint and landlord-facing tools
 - pub/sub event perception and subjective memory writes
 
 Character tools enqueue intents or visual endpoint commands. The engine and game
 master decide what becomes true.
+
+`CharacterAgent` does not reason about tile paths, stair waypoints, or pixels.
+It chooses a character, room, generated location, or door endpoint. The Phaser
+movement system and A* pathfinder turn that endpoint into waypoints.
 
 ## Landlord Agent
 
@@ -44,6 +49,7 @@ landlord/player as a UI gateway.
 - fast FIFO request queue
 - priority jumps for `altercate` spillover and `skip_rent`
 - compact action-card creation
+- current landlord `budgetAed` display and budget-affecting request context
 - timeout handling as "no landlord action taken"
 - user replies and free-text notes
 - forwarding landlord responses to `GameMasterAgent`
@@ -91,7 +97,26 @@ B while Agent B is busy with Agent C, Agent A learns that from the current state
 and must wait, interrupt, or choose another action.
 
 No agent teleports. `move_to` changes interaction/subscription only after Phaser
-movement reaches the destination.
+movement reaches the destination or the nearest safe reachable node.
+
+`move_to(roomId)` defaults to entering the room; access rules may resolve the
+target to the door. `move_to(characterId)` tracks a dynamic target and can
+replan while the target moves.
 
 Use `move_to` as the canonical action name in prompts and schemas; Phaser may
 implement it with walking or running animation internally.
+
+Movement states exposed to the engine are:
+
+- `started_to_move`
+- `moving`
+- `arrived`
+- `unreachable_endpoint`
+
+Stair traversal is handled by explicit pathfinder links. A resident can enter
+their own unit. A visitor targeting another resident's unit stops at the door
+only when access is denied.
+
+Landlord `budgetAed` is engine-owned authoritative state. Agents can propose or
+route budget-affecting actions, but only validated engine/game-master outcomes
+change the value.
