@@ -23,7 +23,7 @@ required.
 - Controls: floors, units per floor, seed, selected floor, selected unit,
   starting budget, renovate floor, renovate unit, dev logging menu.
 - Event log: movement, speech, renovation, complaints, payments, unreachable
-  endpoints, and GM/global events.
+  endpoints, limited-wait notices, and GM/global events.
 
 ## Building Rendering
 
@@ -49,6 +49,8 @@ required.
   the door.
 - Unreachable targets move to nearest safe reachable node and log the failure.
 - Cross-floor movement visibly uses stairs.
+- Rate-limited agents can show idle, thinking, or occupied animation, but no
+  fake tool action.
 
 ## Chat And Perception
 
@@ -85,6 +87,7 @@ Off by default. When enabled, show:
 - generated building render policy
 - landlord setup and renovation controls
 - action-to-animation mapping
+- execution-state display policy, including `limited_wait`
 - character-follow and room-entry movement behavior
 - chat bubble and muffled speech rules
 - landlord budget and capital-event display behavior

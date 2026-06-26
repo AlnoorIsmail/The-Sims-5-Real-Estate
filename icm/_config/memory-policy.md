@@ -1,7 +1,7 @@
 # Memory Policy
 
 The LLM is not the database. The engine owns truth; Chroma memory retrieval only
-builds prompt context for agent decisions.
+builds prompt context for agent decisions. Chroma is not the idempotency ledger.
 
 ## Chroma Setup
 
@@ -65,6 +65,10 @@ When an event resolves:
 Memory is written after validation and resolution, not when an agent merely
 intends an action.
 
+For perceived events, store raw perception plus subjective interpretation when
+the `perceive_digest` node runs. If adaptive limiting denies the digest call,
+keep raw perceptions queued instead of inventing interpreted memory.
+
 ## Agent Context Bundle
 
 For one agent action, assemble only scoped context:
@@ -123,6 +127,13 @@ Use this loop for character behavior:
 
 The LLM proposes intent only. It cannot directly mutate money, jobs, reputation,
 occupancy, rent, ownership, or ROI.
+
+## Idempotency Boundary
+
+Use the runtime's in-memory run ledger for graph runs, node attempts, LLM
+decisions, tool intents, engine events, memory writes, and budget/capital
+events. Chroma records can include source ids for audit, but Chroma is not used
+to deduplicate authoritative side effects.
 
 ## Source Docs
 

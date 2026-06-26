@@ -36,6 +36,7 @@ the app code.
 - `_config/character-archetypes.md`
 - `_config/game-master-events.md`
 - `_config/building-navigation.md`
+- `_config/character-state-machine.md`
 
 Load only the references named by the active stage. Avoid monolithic context.
 
@@ -51,3 +52,5 @@ Load only the references named by the active stage. Avoid monolithic context.
   and one game-master collection.
 - Building: fixed-camera generated side-cutaway, default 2 floors by 3 units,
   configurable to 2-4 floors by 2-5 units, with A* endpoint movement.
+- Character agents: autonomous per-character LangGraph apps guarded by layered
+  state machines, adaptive call limiting, and idempotent tool execution.

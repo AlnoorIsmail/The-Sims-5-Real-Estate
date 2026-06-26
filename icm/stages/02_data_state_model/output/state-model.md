@@ -3,6 +3,7 @@
 ## Inputs
 
 - Shared generated-building rules from `icm/_config/building-navigation.md`
+- Character state-machine rules from `icm/_config/character-state-machine.md`
 - Action and authority rules from `icm/_config/simulation-rules.md`
 - Agent ownership boundaries from `icm/_config/agent-architecture.md`
 
@@ -151,6 +152,137 @@ Use these fields for validated rent payments, skipped rent, renovations,
 maintenance, move-in/out costs, deposits, incentives, fees, and
 game-master-adjudicated incidents.
 
+### CharacterAgentState
+
+- `agentId`
+- `lifecycleState`: prospect, applicant, approved, rejected, moving_in,
+  current, notice_given, moving_out, evicted, former, inactive
+- `rentAccountState`: paid, due, late, delinquent, skipped, defaulted
+- `executionState`: idle, observing, retrieving, deciding, waiting_on_tool,
+  moving, acting, speaking, digesting, reflecting, cooling_down, limited_wait
+- `socialReplyState: SocialReplyState`
+- `perceptionState: PerceptionState`
+- `behaviorState: BehaviorState`
+- `goalState: GoalState`
+- `limiterState: AgentLimiterState`
+- `idempotencyScopeId`
+
+Lifecycle and rent account transitions are engine/game-master authority. The
+LLM can propose actions that may lead to transitions, but cannot set these
+states directly.
+
+### BehaviorState
+
+Use 0-100 integers:
+
+- `needs`
+- `mood`
+- `stress`
+- `patience`
+- `sociability`
+- `conflictTolerance`
+- `landlordTrust`
+- `rentPressure`
+- `attachmentToUnit`
+
+Stable Big Five-derived traits:
+
+- `extraversion`
+- `agreeableness`
+- `conscientiousness`
+- `neuroticism`
+
+The engine updates and clamps mutable numbers. Traits stay stable; beliefs and
+relationships evolve through memory.
+
+### GoalState
+
+- `currentGoal`
+- `obligations: string[]`
+- `fears: string[]`
+- `promises: string[]`
+
+The graph may carry a goal across turns, but it emits only one bare tool action
+at a time.
+
+### SocialReplyState
+
+- `pendingReplies: PendingReply[]`
+
+`PendingReply` fields:
+
+- `id`
+- `speakerId`
+- `targetId`
+- `sourceSpeechEventId`
+- `deadlineMs`
+- `createdAt`
+- `status`: pending, answered, expired
+
+Pending replies do not block normal autonomy. Expired replies become in-world
+silence observations.
+
+### PerceptionState
+
+- `rawQueue: RawPerception[]`
+- `digestQueue: PerceptionDigestRequest[]`
+- `pendingMemoryWrites: MemoryWriteRequest[]`
+- `meaningfulEventCount`
+- `lastReflectionAt`
+
+Raw perceptions gathered during movement stay queued until a digest model call
+is allowed.
+
+### BareToolAction
+
+- `id`
+- `agentId`
+- `verb`
+- `targetType`
+- `targetId`
+- `args`
+
+For `say_to`, `args` includes the message. Do not include freeform action
+metadata, internal monologue, waypoints, pixel coordinates, or state mutations.
+
+### AdaptiveLimiterState
+
+- `runRateLimit`
+- `scenePriorityQueue`
+- `softMinimumTracker`
+- `apiLimitSnapshot`
+- `deniedCallEvents`
+
+Scene priority favors landlord-facing actions, direct speech, altercations,
+safety events, rent crises, visible demo beats, and high ROI/reputation/
+occupancy/budget impact.
+
+### AgentLimiterState
+
+- `lastDecisionAt`
+- `lastDigestAt`
+- `lastReflectionAt`
+- `softMinimumSatisfied`
+- `limitedWaitReason?: string`
+
+If a call is denied, the agent enters `limited_wait`, keeps visible idle or
+occupied animation, and does not invent a fallback tool action.
+
+### IdempotencyLedger
+
+V1 uses an in-memory run ledger with deterministic ids for:
+
+- graph runs
+- node attempts
+- LLM decisions
+- tool intents
+- engine events
+- memory writes
+- budget and capital events
+
+Retried nodes replay cached LLM decisions instead of calling the model again.
+Side effects are applied at most once.
+
 ## Outputs
 
 Future implementation should expose enough state for:
@@ -163,6 +295,9 @@ Future implementation should expose enough state for:
 - floor/unit renovation to deduct landlord `budgetAed` and update ROI
   placeholders
 - landlord budget setup, current budget display, and recent capital events
+- layered CharacterAgent state
+- adaptive limiter and idempotency ledger state
+- raw plus interpreted perception memory flow
 
 ## Verify
 
@@ -172,4 +307,7 @@ Future implementation should expose enough state for:
 - Every visible unit has a room, door, hall connection, and owner/ vacancy state.
 - Stair links are explicit graph edges, not guessed by the agent.
 - Budget-affecting events can explain each `budgetAed` change.
+- CharacterAgent state separates lifecycle, rent account, execution, social
+  reply, perception, memory, limiter, and idempotency concerns.
+- Bare tool actions cannot mutate authoritative state directly.
 - No state shape requires an LLM to be present.

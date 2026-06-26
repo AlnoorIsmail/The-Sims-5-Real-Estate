@@ -12,6 +12,7 @@ Define the provider-neutral LLM harness around the deterministic engine.
 | Layer 3 | `../../_config/character-archetypes.md` | Sprite/persona rules |
 | Layer 3 | `../../_config/game-master-events.md` | GM daily events and news seam |
 | Layer 3 | `../../_config/building-navigation.md` | Endpoint movement and generated location subscriptions |
+| Layer 3 | `../../_config/character-state-machine.md` | Character graph states, limiter, idempotency, and speech behavior |
 | Layer 3 | `../../_config/technical-constraints.md` | Next.js and provider-neutral boundary |
 | Layer 3 | `../../_config/tone-safety.md` | Prompt and adjudication boundaries |
 | Layer 4 | `../02_data_state_model/output/state-model.md` | State available to agents |
@@ -25,8 +26,10 @@ Specify a LangGraph.js-style harness without committing to a provider:
   `GameMasterAgent`
 - `Agent` owns Chroma routing, Gemini embedding config, retrieval, writes, and
   context helpers
-- each `CharacterAgent` owns its sprite identity, persona cards, action proposal
-  loop, Phaser endpoint tools, and subjective memory writes
+- each `CharacterAgent` is an autonomous per-character LangGraph app with
+  layered state machines, Phaser endpoint tools, and subjective memory writes
+- a shared scheduler coordinates all character graphs, adaptive limiting,
+  idempotency, and tool execution
 - `LandlordAgent` is a non-autonomous UI gateway for request queueing, action
   cards, user replies, timeouts, and forwarding outcomes to the game master
 - `GameMasterAgent` owns morning brief, event-card selection, future news
@@ -40,6 +43,17 @@ Specify a LangGraph.js-style harness without committing to a provider:
 - character-target movement is dynamic and can replan outside the agent prompt
 - landlord `budgetAed` appears in context only when relevant to landlord-facing
   or budget-affecting actions
+- character graph nodes are `observe`, `retrieve`, `perceive_digest`,
+  `decide_action`, `call_tool`, `wait_result`, `record_memory`, and
+  `maybe_reflect`
+- graph output is one bare tool action at a time
+- fire-and-forget `say_to` creates priority perception for the target and a
+  patience deadline for the speaker
+- walking agents perceive only; queued perceptions digest after arrival when
+  adaptive limiting allows it
+- adaptive limiting prioritizes scene importance and respects API rate limits
+- idempotency uses an in-memory run ledger for graph runs, node attempts, tool
+  intents, engine events, memory writes, and budget/capital events
 - the runtime assembles an `AgentContextBundle` per actor using system rules,
   identity, visible world state, relationships, retrieved memories,
   reflections, recent local events, available actions, and JSON schema
@@ -75,6 +89,9 @@ Write to `output/agent-harness-spec.md`:
 - tool list and schemas at a high level
 - message flow
 - generated location perception flow
+- character state-machine flow
+- adaptive limiter and idempotency flow
+- speech timeout and in-world silence flow
 - mock autonomy movement proposal flow
 - game-master daily brief and summary flow
 - mock fallback behavior
@@ -85,6 +102,9 @@ Write to `output/agent-harness-spec.md`:
 ## Verify
 
 - Resident agents cannot mutate state directly.
+- CharacterAgent graphs emit bare tool calls only.
+- Retried graph nodes replay cached LLM decisions rather than duplicating side
+  effects.
 - `request_repair`, `file_complaint`, `pay_rent`, and `skip_rent` target
   `LandlordAgent`, not the game master directly.
 - The game master remains the only adjudicator.

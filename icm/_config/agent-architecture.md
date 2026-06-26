@@ -4,6 +4,10 @@ The harness uses app-owned classes as the boundary around any LangGraph or LLM
 implementation. Classes define responsibilities; the graph is an implementation
 detail.
 
+Character agents are autonomous per-character LangGraph applications. A shared
+runtime scheduler coordinates graph execution, model-call limiting, tool
+execution, and idempotency.
+
 ## Base Class
 
 `Agent` owns:
@@ -24,6 +28,7 @@ The base class never mutates authoritative world state.
 
 - sprite identity and animation keys
 - persona cards and psychology modifiers
+- layered state machines from `character-state-machine.md`
 - visible world-state observation
 - action proposal from the fixed verb set
 - Phaser endpoint tools such as
@@ -88,7 +93,8 @@ act independently; the game master frames the day and adjudicates consequences.
 - Characters act autonomously during a 45-second day window.
 - Day close stops new actions, lets the active action finish, then asks the game
   master for a summary.
-- Rate limits are to be implemented per agent so we dont max out API keys mid demo.
+- The shared scheduler uses adaptive limiting and current API rate-limit signals
+  so autonomous graphs do not exhaust keys mid demo.
 
 ## Atomic Actions
 
@@ -120,3 +126,30 @@ only when access is denied.
 Landlord `budgetAed` is engine-owned authoritative state. Agents can propose or
 route budget-affecting actions, but only validated engine/game-master outcomes
 change the value.
+
+## Character Graph Runtime
+
+Each `CharacterAgent` graph uses these v1 nodes:
+
+- `observe`
+- `retrieve`
+- `perceive_digest`
+- `decide_action`
+- `call_tool`
+- `wait_result`
+- `record_memory`
+- `maybe_reflect`
+
+The graph emits one bare tool action at a time. It does not emit freeform action
+metadata, waypoints, pixel coordinates, or direct state mutations.
+
+While Phaser movement is active, the graph can queue perceptions but cannot
+issue normal new tools. After arrival, queued perceptions are digested if the
+adaptive limiter allows it.
+
+The shared scheduler uses scene importance and API rate limits to decide which
+agent gets model time. If a call is denied, the agent enters `limited_wait` and
+does not invent a fallback tool action.
+
+Use an in-memory run ledger for idempotency. Retried graph nodes replay cached
+LLM decisions and side effects are applied at most once.

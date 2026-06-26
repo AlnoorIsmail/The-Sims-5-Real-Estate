@@ -14,6 +14,7 @@ Define the minimum state needed for the simulator and UI.
 | Layer 3 | `../../_config/character-archetypes.md` | Sprite/persona seed rules |
 | Layer 3 | `../../_config/game-master-events.md` | Event-card shape |
 | Layer 3 | `../../_config/building-navigation.md` | Generated building, locations, and pathfinding |
+| Layer 3 | `../../_config/character-state-machine.md` | Character lifecycle, execution, limiter, and idempotency state |
 | Layer 4 | `../01_product_brief/output/product-brief.md` | Locked demo path |
 | Layer 4 | `../../../challenge-repo/docs/datasets.md` | Synthetic data columns and caveats |
 
@@ -28,6 +29,10 @@ Specify plain TypeScript-friendly data shapes for:
 - landlord starting budget, current `budgetAed`, and capital event state
 - agent class state for `Agent`, `CharacterAgent`, `LandlordAgent`, and
   `GameMasterAgent`
+- character lifecycle, rent account, execution, social reply, perception, and
+  memory state layers
+- stable personality traits and mutable behavior-driver integers
+- adaptive limiter state and in-memory idempotency ledger state
 - landlord request queue, compact action-card state, timeout/default state, and
   user response state
 - sprite archetype, gender mapping, and persona-card seed state
@@ -41,6 +46,7 @@ Specify plain TypeScript-friendly data shapes for:
   relationship memory, reflection memory, and working agent state
 - Chroma collection names and memory record metadata
 - `AgentContextBundle` inputs for one agent action
+- bare tool action proposal shape for CharacterAgent graph output
 - game-master event-card state and daily summary state
 - validated action proposals
 - action target types: location, character, landlord, lifecycle, none
@@ -83,6 +89,9 @@ Write to `output/state-model.md`:
 - `move_to(characterId)` has enough state for live replanning.
 - Landlord `budgetAed` has a clear source for every change.
 - Every memory layer has one owner and one reason to exist.
+- Character lifecycle and rent account state do not duplicate authority.
+- Idempotency state can prevent duplicate graph decisions, tool intents, memory
+  writes, engine events, and budget deltas.
 - Old events can be stored without being dumped wholesale into prompts.
 - Chroma memory is isolated per agent except for game-master global memory.
 - Synthetic data is labeled synthetic when referenced.

@@ -12,6 +12,7 @@ Design the deterministic engine before adding LLM behavior.
 | Layer 3 | `../../_config/memory-policy.md` | Subjective memory writes |
 | Layer 3 | `../../_config/game-master-events.md` | Daily event deck and global publication |
 | Layer 3 | `../../_config/building-navigation.md` | Generated locations and A* movement contract |
+| Layer 3 | `../../_config/character-state-machine.md` | Execution gating, limiter, idempotency, and failure handling |
 | Layer 4 | `../02_data_state_model/output/state-model.md` | State shapes |
 
 ## Process
@@ -20,6 +21,7 @@ Define the minimum deterministic loop:
 
 - accept a current sim state
 - accept proposed actions
+- accept bare tool actions from CharacterAgent graphs
 - validate actions against actor capability and location
 - validate action target type: location, character, landlord, lifecycle, or none
 - convert `move_to` endpoints into path requests
@@ -27,6 +29,8 @@ Define the minimum deterministic loop:
   becomes stale
 - accept Phaser movement completion before changing location subscriptions
 - queue and resolve actions atomically
+- gate actions by CharacterAgent execution state
+- preserve raw perception queues while agents are moving or rate-limited
 - respect busy targets and ordered information transfer
 - route `request_repair`, `file_complaint`, `pay_rent`, and `skip_rent` to the
   landlord request queue
@@ -40,6 +44,8 @@ Define the minimum deterministic loop:
   resentment, or obligations
 - trigger reflection every 5 to 10 meaningful events per agent, or after a
   high-emotion/high-impact event
+- enforce idempotency for tool intents, engine events, memory writes, and budget
+  deltas
 - update reputation, satisfaction, maintenance pressure, occupancy/churn risk,
   landlord `budgetAed`, and placeholder ROI inputs
 
@@ -67,12 +73,15 @@ Write to `output/sim-engine-spec.md`:
 - memory recording rules
 - reflection trigger rules
 - deterministic fallback scenarios
+- adaptive limiter and idempotency rules
 - smallest checks needed when implemented
 
 ## Verify
 
 - The engine works with resident proposals but does not require them.
 - Invalid actions produce safe no-op or rejected events, not partial state.
+- Failed or rejected CharacterAgent actions become observations, then return the
+  agent to idle or cooling_down without auto-retry.
 - The LLM never directly mutates authoritative state.
 - Characters cannot mutate landlord/business state directly through landlord
   actions.
