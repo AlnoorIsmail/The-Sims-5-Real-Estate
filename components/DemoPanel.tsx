@@ -1,134 +1,69 @@
 import type { Track } from "./TrackBadge";
 
-const TRACK_COPY: Record<Track, string> = {
-  land: "Good land decisions need more than a cheap price.",
-  investment: "A good purchase should have value upside, sensible costs, and manageable risk.",
-  communities: "A strong area should support demand, access, and quality of life.",
-  decision: "A clear decision should show the result and the reasons behind it.",
+const VIDEO_SRC = "/videos/property-preview.mp4";
+
+const TRACK_LABELS: Record<Track, string> = {
+  land: "Land opportunity preview",
+  investment: "Investment opportunity preview",
+  communities: "Area quality preview",
+  decision: "Property decision preview",
 };
-
-const CHECK_CARDS = [
-  {
-    label: "Value check",
-    title: "What is it predicted to be worth?",
-    detail: "Predicts market value from the property details, area, and property type.",
-  },
-  {
-    label: "Profit check",
-    title: "Is there room after costs?",
-    detail: "Uses predicted value minus your purchase and development costs.",
-  },
-  {
-    label: "Risk check",
-    title: "What could weaken the deal?",
-    detail: "Highlights area quality, infrastructure, and warning signs before you commit.",
-  },
-];
-
-const RESULT_ITEMS = [
-  "A clear buy, review, or avoid recommendation",
-  "Predicted value and estimated profit",
-  "Confidence score out of 100",
-  "Main factors behind the answer",
-  "Warnings to review before making a real decision",
-];
-
-function CheckCard({
-  label,
-  title,
-  detail,
-}: {
-  label: string;
-  title: string;
-  detail: string;
-}) {
-  return (
-    <div className="rounded-lg border border-[#ded7c9] bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium text-[#718078]">{label}</p>
-      <p className="mt-2 text-base font-semibold text-[#17201f]">{title}</p>
-      <p className="mt-3 text-xs leading-relaxed text-[#738079]">{detail}</p>
-    </div>
-  );
-}
-
-function LogicStep({ index, title, text }: { index: string; title: string; text: string }) {
-  return (
-    <div className="flex gap-3">
-      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#23443d] text-xs font-semibold text-white">
-        {index}
-      </div>
-      <div>
-        <p className="text-sm font-semibold text-[#17201f]">{title}</p>
-        <p className="mt-1 text-sm leading-relaxed text-[#64716b]">{text}</p>
-      </div>
-    </div>
-  );
-}
 
 export default function DemoPanel({ track }: { track: Track }) {
   return (
-    <section className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-5 shadow-[0_18px_50px_rgba(45,38,24,0.08)]">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6e7d76]">
-            How it helps
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#17201f]">
-            A quick second opinion before you buy
-          </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-[#64716b]">
-            {TRACK_COPY[track]} This screen brings the key numbers together so
-            you can spot attractive deals and avoid weak ones faster.
-          </p>
+    <section className="overflow-hidden rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] shadow-[0_18px_50px_rgba(45,38,24,0.08)]">
+      <div className="px-5 pt-5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6e7d76]">
+          Visual reference
+        </p>
+        <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight text-[#17201f]">
+              {TRACK_LABELS[track]}
+            </h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#64716b]">
+              Keep the visual context on the right while checking the property
+              numbers on the left.
+            </p>
+          </div>
+          <span className="rounded-full border border-[#d8d1c3] bg-white px-3 py-1 text-[11px] font-semibold text-[#66736e]">
+            preview
+          </span>
         </div>
-        <span className="rounded-full border border-[#d8d1c3] bg-white px-3 py-1 text-[11px] font-semibold text-[#66736e]">
-          plain-language result
-        </span>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        {CHECK_CARDS.map((card) => (
-          <CheckCard key={card.label} {...card} />
-        ))}
+      <div className="mt-5 border-y border-[#ded7c9] bg-[#ebe5d9]">
+        <video
+          className="aspect-video w-full bg-[#e7e0d4] object-cover"
+          src={VIDEO_SRC}
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls
+        >
+          Your browser does not support the video preview.
+        </video>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_0.85fr]">
-        <div className="rounded-lg border border-[#ded7c9] bg-white p-4">
-          <p className="text-sm font-semibold text-[#17201f]">How to read it</p>
-          <div className="mt-4 space-y-4">
-            <LogicStep
-              index="1"
-              title="Enter the property details"
-              text="Choose the area, property type, size, purchase cost, and expected development cost."
-            />
-            <LogicStep
-              index="2"
-              title="Review the numbers"
-              text="Check the predicted value, estimated profit, score, and the main factors behind the answer."
-            />
-            <LogicStep
-              index="3"
-              title="Use the warnings"
-              text="If the margin is thin or the area risk is high, slow down and review before moving forward."
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-[#ded7c9] bg-white p-4">
-          <p className="text-sm font-semibold text-[#17201f]">What you get</p>
-          <p className="mt-1 text-xs leading-relaxed text-[#718078]">
-            A simple view for comparing the deal, not a final financial opinion.
+      <div className="grid gap-3 p-5 sm:grid-cols-3">
+        <div className="rounded-lg border border-[#ded7c9] bg-white p-3">
+          <p className="text-xs font-medium text-[#718078]">Use it with</p>
+          <p className="mt-1 text-sm font-semibold text-[#17201f]">
+            District inputs
           </p>
-          <div className="mt-4 space-y-2">
-            {RESULT_ITEMS.map((item) => (
-              <div
-                key={item}
-                className="rounded-md border border-[#ebe4d7] bg-[#faf8f2] px-3 py-2 text-xs text-[#52605a]"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
+        </div>
+        <div className="rounded-lg border border-[#ded7c9] bg-white p-3">
+          <p className="text-xs font-medium text-[#718078]">Compare against</p>
+          <p className="mt-1 text-sm font-semibold text-[#17201f]">
+            Predicted value
+          </p>
+        </div>
+        <div className="rounded-lg border border-[#ded7c9] bg-white p-3">
+          <p className="text-xs font-medium text-[#718078]">Decision focus</p>
+          <p className="mt-1 text-sm font-semibold text-[#17201f]">
+            Buy confidence
+          </p>
         </div>
       </div>
     </section>
