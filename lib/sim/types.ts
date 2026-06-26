@@ -101,6 +101,13 @@ export type CapitalSourceType =
   | "incentive"
   | "gm_incident";
 
+export type ActionSource =
+  | "character_agent"
+  | "landlord"
+  | "game_master"
+  | "mock"
+  | "system";
+
 export type MemoryType =
   | "episodic"
   | "semantic"
@@ -175,6 +182,7 @@ export interface GeneratedBuilding {
   walkableCells: GridCell[];
   blockedCells: GridCell[];
   spawnPoints: Record<string, GridCell>;
+  locationCells?: Record<string, GridCell[]>;
 }
 
 export interface CapitalEvent {
@@ -183,6 +191,10 @@ export interface CapitalEvent {
   timestamp: number;
   sourceType: CapitalSourceType;
   amountAed: number;
+  budgetDeltaAed: number;
+  budgetBeforeAed: number;
+  budgetAfterAed: number;
+  capitalEventId: string;
   unitId?: string;
   residentId?: string;
   description: string;
@@ -203,6 +215,7 @@ export interface LandlordState {
   initialBudgetAed: number;
   budgetAed: number;
   capitalEvents: CapitalEvent[];
+  requestQueue?: LandlordRequestQueueState;
   selectedFloorIndex?: number;
   selectedUnitId?: string;
   runControls: RunControls;
@@ -220,10 +233,15 @@ export interface PathResult {
   status: "reachable" | "nearest_reachable" | "rejected";
   waypoints: GridCell[];
   finalLocationId: string;
+  finalCell?: GridCell;
+  targetLocationId?: string;
+  targetCharacterId?: string;
+  dynamicTarget?: boolean;
   unreachableReason?: string;
 }
 
 export interface MovementState {
+  id?: string;
   actorId: string;
   status: MovementStatus;
   fromLocationId: string;
@@ -236,6 +254,10 @@ export interface MovementState {
   replanReason?: ReplanReason;
   currentWaypointIndex: number;
   path: GridCell[];
+  sourceActionId?: string;
+  finalCell?: GridCell;
+  pathStatus?: PathResult["status"];
+  unreachableReason?: string;
 }
 
 export interface PendingReply {
@@ -339,6 +361,7 @@ export interface CharacterAgentState {
   limiterState: AgentLimiterState;
   idempotencyScopeId: string;
   currentLocationId: string;
+  currentCell?: GridCell;
   ownedUnitId?: string;
   spriteKey: string;
   displayName: string;
@@ -361,9 +384,91 @@ export interface SimEvent {
   locationId?: string;
   locationType?: LocationType;
   actorId?: string;
+  targetId?: string;
   verb?: ActionVerb;
+  visibility?: "public" | "private";
+  participants?: string[];
+  tags?: string[];
   summary: string;
   sourceEventId?: string;
+  budgetDeltaAed?: number;
+  budgetBeforeAed?: number;
+  budgetAfterAed?: number;
+  capitalEventId?: string;
+}
+
+export interface LandlordResponse {
+  choice?: string;
+  freeText?: string;
+  approved?: boolean;
+  status?: "answered" | "timed_out";
+  timestamp?: number;
+  budgetDeltaAed?: number;
+}
+
+export type LandlordRequestStatus =
+  | "pending"
+  | "active"
+  | "answered"
+  | "timed_out";
+
+export type LandlordRequestUrgency = "low" | "medium" | "high" | "critical";
+
+export interface LandlordRequest {
+  id: string;
+  sourceActionId: string;
+  requesterId: string;
+  verb: ActionVerb;
+  targetId: string;
+  args?: Record<string, unknown>;
+  summary: string;
+  urgency: LandlordRequestUrgency;
+  priority: number;
+  suggestedChoices: string[];
+  defaultChoice: string;
+  createdAt: number;
+  timeoutAt: number;
+  status: LandlordRequestStatus;
+  response?: LandlordResponse;
+}
+
+export interface LandlordRequestQueueState {
+  activeRequestId?: string;
+  pendingRequestIds: string[];
+  requests: Record<string, LandlordRequest>;
+}
+
+export interface QueuedAction {
+  id: string;
+  action: BareToolAction;
+  source: ActionSource;
+  status: "queued" | "completed" | "rejected";
+  createdAt: number;
+  eventId?: string;
+  reason?: string;
+}
+
+export interface IdempotencyLedgerState {
+  toolIntentIds: Record<string, true>;
+  engineEventIds: Record<string, true>;
+  memoryWriteIds: Record<string, true>;
+  budgetEventIds: Record<string, true>;
+}
+
+export interface SimMetricState {
+  reputation: number;
+  satisfaction: number;
+  maintenancePressure: number;
+  occupancyRate: number;
+  churnRisk: number;
+  incidentSeverity: number;
+  roiProxy: number;
+}
+
+export interface MockScenarioState {
+  name: string;
+  nextActionIndex: number;
+  actions: BareToolAction[];
 }
 
 export interface SimTickState {
@@ -374,5 +479,9 @@ export interface SimTickState {
   landlord: LandlordState;
   characters: Record<string, CharacterAgentState>;
   movements: Record<string, MovementState>;
+  actionQueue?: QueuedAction[];
   eventLog: SimEvent[];
+  idempotencyLedger?: IdempotencyLedgerState;
+  metrics?: SimMetricState;
+  mockScenario?: MockScenarioState;
 }
