@@ -38,9 +38,20 @@ Write to `output/demo-audit.md`:
 - known limitations
 - final pre-demo checks
 
+Write to `output/roi-prediction-contract.md` when ROI inputs or outputs need to
+be frozen for implementation handoff:
+
+- versioned contract name
+- required input fields, units, and ranges
+- required output fields, units, and recommendation semantics
+- fallback response shape
+- compatibility rules for future ML replacements
+
 ## Verify
 
 - The app does not claim trained ROI prediction before the ML integration lands.
 - The demo shows AI or agentic behavior doing visible work.
 - A local mock path still works without API keys.
 - The story, UI, and metrics all describe the same run.
+- Future ROI model work can replace internals without changing the v1 UI
+  contract.

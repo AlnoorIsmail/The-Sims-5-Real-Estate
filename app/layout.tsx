@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-// Update this with your project's name and pitch — it sets the browser tab
-// title and social previews.
 export const metadata: Metadata = {
-  title: "AI PropTech Prototype — Abu Dhabi AI PropTech Challenge",
+  title: "The Sims 5 Real Estate",
   description:
-    "Building the Intelligence Layer for Land, Investment and Communities.",
+    "An AI-assisted real estate investment simulator that scores Abu Dhabi districts and parcels using market, land, community, and amenity signals.",
 };
 
 export default function RootLayout({
