@@ -24,7 +24,10 @@ Specify plain TypeScript-friendly data shapes for:
 - units/floors/locations
 - residents and prospective residents
 - landlord/player state
-- agent class state for `Agent`, `CharacterAgent`, and `GameMasterAgent`
+- agent class state for `Agent`, `CharacterAgent`, `LandlordAgent`, and
+  `GameMasterAgent`
+- landlord request queue, compact action-card state, timeout/default state, and
+  user response state
 - sprite archetype, gender mapping, and persona-card seed state
 - relationships and satisfaction
 - events and incidents
@@ -36,6 +39,7 @@ Specify plain TypeScript-friendly data shapes for:
 - `AgentContextBundle` inputs for one agent action
 - game-master event-card state and daily summary state
 - validated action proposals
+- action target types: location, character, landlord, lifecycle, none
 - simulation tick state
 - placeholder ROI inputs and output
 
@@ -60,6 +64,8 @@ Write to `output/state-model.md`:
 
 - Every UI element in the product brief has a state source.
 - Every action in the v1 vocabulary has enough state to validate it.
+- Landlord-facing actions have enough state to render one action card and
+  return one user response or timeout.
 - Every memory layer has one owner and one reason to exist.
 - Old events can be stored without being dumped wholesale into prompts.
 - Chroma memory is isolated per agent except for game-master global memory.

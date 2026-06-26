@@ -20,8 +20,12 @@ Define the minimum deterministic loop:
 - accept a current sim state
 - accept proposed actions
 - validate actions against actor capability and location
+- validate action target type: location, character, landlord, lifecycle, or none
 - queue and resolve actions atomically
 - respect busy targets and ordered information transfer
+- route `request_repair`, `file_complaint`, `pay_rent`, and `skip_rent` to the
+  landlord request queue
+- priority-notify landlord for `skip_rent` and `altercate` spillover only
 - produce state deltas
 - append event log entries
 - record meaningful resolved events into episodic memory
@@ -45,6 +49,8 @@ Write to `output/sim-engine-spec.md`:
 
 - tick flow
 - action validation rules
+- action target routing rules
+- landlord request queue and timeout rules
 - state delta rules
 - event log format
 - pub/sub publication rules
@@ -59,9 +65,13 @@ Write to `output/sim-engine-spec.md`:
 - The engine works with resident proposals but does not require them.
 - Invalid actions produce safe no-op or rejected events, not partial state.
 - The LLM never directly mutates authoritative state.
+- Characters cannot mutate landlord/business state directly through landlord
+  actions.
+- Ignored landlord cards become timeout events meaning "no landlord action
+  taken".
 - Memory records describe what happened after validation, not what an agent
   merely attempted.
-- `walk_to` changes block subscription only after movement completes.
+- `move_to` changes block subscription only after movement completes.
 - Same-block subscribers write subjective memory of resolved local events.
 - One scripted scenario can show movement, speech, complaint, repair, and ROI
   movement.

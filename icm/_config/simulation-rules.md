@@ -15,21 +15,59 @@ It does not puppet normal resident behavior.
 
 Use a small fixed verb set:
 
-- `move_to`
-- `say_to`
-- `emote`
+- `move_to`: targets a location or character endpoint; includes `speed: "walk" | "run"`
+- `say_to`: targets a character; may include `interrupt: true`
+- `request_repair`: targets `LandlordAgent`
+- `file_complaint`: targets `LandlordAgent`
+- `pay_rent`: targets `LandlordAgent`
+- `skip_rent`: targets `LandlordAgent`
+- `move_in`: landlord-mediated lifecycle action
+- `move_out`: landlord-mediated lifecycle action
+- `altercate`: targets a character and escalates to game-master adjudication
+- `idle`: explicit no-op or wait
+
+
+Add new verbs only when a demo scene cannot be expressed with these.
+
+## Landlord Gateway
+
+The human user is the landlord. `LandlordAgent` is a non-autonomous gateway that
+delivers resident requests to the UI and returns user responses to the game
+master for adjudication.
+
+These character actions target `LandlordAgent` directly:
+
 - `request_repair`
 - `file_complaint`
 - `pay_rent`
 - `skip_rent`
-- `social_interaction`
-- `move_in`
-- `move_out`
-- `idle`
-- `altercate`
 
+`move_in` and `move_out` are landlord-mediated: residents or prospects can
+request them, but approval, vacancy, cost, and consequences are resolved through
+the landlord/game-master flow.
 
-Add new verbs only when a demo scene cannot be expressed with these.
+## Landlord Request Queue
+
+Use a fast one-at-a-time FIFO buffer so autonomous agents do not drop or
+overwrite landlord requests.
+
+Priority jumps are allowed only for:
+
+- `altercate` spillover affecting safety, reputation, or the landlord
+- `skip_rent`
+
+Landlord action cards include:
+
+- requester
+- action type
+- summary
+- urgency
+- suggested choices
+- free-text reply
+- timeout/default
+
+If the human ignores a card, timeout resolves as "no landlord action taken"; the
+game master applies consequences.
 
 ## Daily Flow
 
@@ -47,12 +85,17 @@ their Phaser character currently stands.
 - direct targets always receive targeted actions
 - game-master/global events bypass block limits
 - moving intent does not update subscription
-- `walk_to` updates subscription only after Phaser movement completes
+- `move_to` updates subscription only after Phaser movement completes
 
 ## Atomic Actions
 
 Actions resolve in order. If a target is busy, the proposing agent must wait,
 interrupt through an allowed action, or choose another action.
+
+`say_to(..., interrupt: true)` is allowed when the target is visible/reachable,
+but it is socially discouraged. The interrupting agent prompt should understand
+that interrupting is rude unless urgent, and interrupted agents should react
+according to context, mood, and relationship memory.
 
 ## Core Consequence Axes
 

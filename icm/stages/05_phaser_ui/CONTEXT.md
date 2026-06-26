@@ -27,6 +27,8 @@ Specify the fixed-camera game panel:
 - emotes/status labels from actions and incidents
 - event log and current metrics beside the canvas
 - landlord controls for scenario setup and text/action input
+- landlord action cards for repair, complaint, rent payment, skipped rent, and
+  mediated move-in/out decisions
 
 Keep the first UI slice readable on a projector. Prefer clarity over decoration.
 
@@ -39,6 +41,7 @@ Write to `output/phaser-ui-spec.md`:
 - action-to-animation mapping
 - chat bubble rules
 - controls and empty/loading/error states
+- landlord action-card layout, choices, free-text reply, timeout/default state
 - asset policy
 - block/subscription visualization policy
 
@@ -46,6 +49,7 @@ Write to `output/phaser-ui-spec.md`:
 
 - A viewer can understand who is acting and why without reading code.
 - Every visible animation maps to a known action or state delta.
-- `walk_to` visually completes before interaction block changes.
+- `move_to` visually completes before interaction block changes.
+- Landlord action cards are compact enough for the demo viewport.
 - The UI can run with deterministic mock events.
 - Text does not hide the simulation or metrics.
