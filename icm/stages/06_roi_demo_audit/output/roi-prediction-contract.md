@@ -109,6 +109,79 @@ Required amenity aggregate features:
 - `amenity_count_community`
 - `amenity_count_mobility`
 
+## JSON Input Shape
+
+The model-serving layer should accept a structured object that separates price
+features, parcel features, and scenario assumptions. This shape is internal to
+the backend model boundary. The frontend should consume only `RoiDecisionV1`.
+
+Example `ModelScoringInputV1`:
+
+```json
+{
+  "price_per_sqm_features": {
+    "district": "Al Bahia",
+    "asset_type": "retail",
+    "size_sqm": 778,
+    "buyer_type": "individual",
+    "area_type": "coastal",
+    "profile": "mid",
+    "base_sale_aed_sqm": 8000,
+    "gross_yield_pct": 8.0,
+    "infrastructure_score": 67,
+    "established_year": 2006,
+    "transaction_year": 2023,
+    "transaction_month": 1,
+    "transaction_quarter": 1
+  },
+  "parcel_features": {
+    "district": "Al Bahia",
+    "zone": "Z-CMU-05",
+    "land_use": "community",
+    "parcel_size_sqm": 8959,
+    "current_status": "under_development",
+    "area_type": "coastal",
+    "profile": "mid",
+    "base_sale_aed_sqm": 8000,
+    "gross_yield_pct": 8.0,
+    "infrastructure_score": 67,
+    "established_year": 2006,
+    "avg_population_estimate": 52583.5,
+    "avg_occupancy_rate": 0.8975,
+    "avg_service_demand_index": 63.0,
+    "avg_mobility_score": 61.5,
+    "avg_resident_experience_score": 88.25,
+    "amenity_count_total": 100,
+    "amenity_count_education": 14,
+    "amenity_count_healthcare": 10,
+    "amenity_count_retail": 9,
+    "amenity_count_services": 11,
+    "amenity_count_community": 38,
+    "amenity_count_mobility": 18
+  },
+  "scenario": {
+    "parcel_id": "PRC-0280",
+    "district": "Al Bahia",
+    "acquisition_cost_aed": 18029692.8,
+    "development_cost_aed": 5151340.8,
+    "currency": "AED"
+  }
+}
+```
+
+Rules:
+
+- Do not include target fields such as `price_per_sqm`,
+  `estimated_value_aed`, or `development_potential_score` in the input at
+  inference time.
+- Do not include leakage fields such as `transaction_value_aed` in
+  `price_per_sqm_features`.
+- `parcel_features` is reused by both the parcel-value model and the
+  development-potential model.
+- Scenario costs may be user-entered, finance-team estimates, or deterministic
+  assumptions. In the current sample script they are derived from predicted
+  parcel value.
+
 ## Internal Prediction Output
 
 The model layer produces exactly these normalized prediction values for the ROI
@@ -139,6 +212,78 @@ In the current sample script, scenario costs are deterministic assumptions:
 ```text
 acquisition_cost_aed = predicted_estimated_value_aed * 0.70
 development_cost_aed = predicted_estimated_value_aed * 0.20
+```
+
+## JSON Output Shape
+
+The model layer should first produce `ModelPredictionOutputV1`:
+
+```json
+{
+  "predictions": {
+    "predicted_price_per_sqm": 7171.61,
+    "predicted_estimated_value_aed": 25756704,
+    "predicted_development_potential_score": 73.56
+  },
+  "model_metadata": {
+    "price_per_sqm_model": "catboost",
+    "estimated_value_aed_model": "xgboost",
+    "development_potential_score_model": "catboost",
+    "metrics_file": "outputs/model_metrics.json"
+  },
+  "context": {
+    "district_profile": "mid",
+    "district_gross_yield_pct": 8.0,
+    "district_infrastructure_score": 67.0,
+    "acquisition_cost_aed": 18029692.8,
+    "development_cost_aed": 5151340.8
+  },
+  "warnings": []
+}
+```
+
+The app-facing boundary then wraps the ROI decision:
+
+```json
+{
+  "ready": true,
+  "decision": {
+    "recommendation": "CONSIDER",
+    "success_score": 74.51,
+    "predicted_price_per_sqm": 7171.61,
+    "predicted_estimated_value_aed": 25756704,
+    "predicted_development_potential_score": 73.56,
+    "district_profile": "mid",
+    "district_gross_yield_pct": 8.0,
+    "district_infrastructure_score": 67.0,
+    "total_cost_aed": 23181033.6,
+    "margin_aed": 2575670.4,
+    "margin_pct": 11.11,
+    "reason": "CONSIDER: score 74.5/100 with 11.1% margin, 8.0% district yield, 73.6/100 development potential, and 67.0/100 infrastructure.",
+    "warnings": [
+      "Final recommendation uses transparent rule-based ROI logic, not a trained ROI model."
+    ],
+    "district": "Al Bahia",
+    "parcel_id": "PRC-0280",
+    "land_use": "community",
+    "current_status": "under_development",
+    "acquisition_cost_aed": 18029692.8,
+    "development_cost_aed": 5151340.8,
+    "generated_at": "2026-06-26T05:23:54.135791+00:00",
+    "data_source": "Hugging Face starter-kit CSVs or matching local data/ CSVs"
+  }
+}
+```
+
+If model artifacts, feature inputs, or prepared outputs are unavailable, return
+the fallback response instead of partial decision data:
+
+```json
+{
+  "ready": false,
+  "message": "No prepared recommendation was found.",
+  "command": "python ml_pipeline/train_models.py && python ml_pipeline/predict_and_score.py"
+}
 ```
 
 ## Boundary
@@ -289,6 +434,35 @@ The final score is clamped to 0 to 100.
 Until a trained ROI model is explicitly integrated, warnings must include that
 the final recommendation uses transparent rule-based ROI logic, not a trained
 ROI model. Starter-kit data must be described as synthetic challenge data.
+
+## Pre-Purchase Valuation Uses
+
+This contract can support a larger real-estate decision product before a buyer
+commits capital:
+
+- Screen candidate parcels by predicted value, predicted price per sqm,
+  development potential, yield, infrastructure, and final recommendation.
+- Estimate an offer ceiling by comparing acquisition cost plus development cost
+  against predicted parcel value and margin percent.
+- Compare districts with the same cost assumptions to see whether yield and
+  infrastructure are strong enough to justify a purchase.
+- Build a pre-purchase investment memo with value estimate, margin, key
+  district context, model warning notes, and a plain-language reason string.
+- Run sensitivity analysis by changing `acquisition_cost_aed` and
+  `development_cost_aed` while keeping model predictions fixed.
+- Flag deals for deeper due diligence when margin is negative, infrastructure
+  is weak, predicted value is non-positive, or warning messages are present.
+- Rank parcels for a short list before manual underwriting, site visits, title
+  review, and legal checks.
+- Compare predicted value against seller asking price to identify potentially
+  overpriced or underpriced opportunities.
+- Support financing conversations by producing a repeatable, auditable
+  feasibility score and cost/value breakdown.
+- Track model risk by exposing warnings and keeping the rule-based ROI layer
+  separate from trained predictions.
+
+The output should not be treated as a purchase decision by itself. It is an
+early valuation and triage aid for investors, analysts, and property teams.
 
 ## Larger App Integration Notes
 
