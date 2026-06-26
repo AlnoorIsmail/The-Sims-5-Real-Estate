@@ -3,6 +3,9 @@
 This workspace keeps future coding work sequential, reviewable, and easy for
 Cursor or Codex to resume.
 
+Before planning or coding, read `STATUS.md` to see what is specified, what is
+implemented, and what currently diverges from the ICM specs.
+
 ## Product Direction
 
 Build a Decision Intelligence prototype for the Abu Dhabi AI PropTech Challenge:
@@ -12,6 +15,17 @@ time.
 
 The ICM files guide development. Runtime multi-agent behavior still belongs in
 the app code.
+
+## Progress Ledger
+
+`STATUS.md` is the current progress ledger. Update it after meaningful ICM or
+runtime edits so it continues to reflect:
+
+- spec-only work
+- partial runtime implementation
+- missing runtime implementation
+- divergences from agreed specs
+- verification needed
 
 ## Stage Routing
 
@@ -37,6 +51,7 @@ the app code.
 - `_config/game-master-events.md`
 - `_config/building-navigation.md`
 - `_config/character-state-machine.md`
+- `STATUS.md`
 
 Load only the references named by the active stage. Avoid monolithic context.
 

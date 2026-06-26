@@ -1,13 +1,18 @@
 import type { SimEngine } from "@/lib/sim/engine-interface";
 import type { BareToolAction, SimEvent, SimTickState } from "@/lib/sim/types";
 import { Agent } from "./Agent";
+import type { SimulationBus } from "./bus/simulation-bus";
 import { makeLedgerId } from "./idempotency";
+import type { LanguageModel } from "./llm/language-model";
 import type { MemoryStore } from "./memory";
+import {
+  assembleDaySummaryPrompt,
+  assembleMorningBriefPrompt,
+} from "./prompts/assembler";
 import type {
   GameMasterEventCard,
   HarnessConfig,
   LandlordActionCard,
-  LlmProvider,
 } from "./types";
 
 export const GM_EVENT_DECK: GameMasterEventCard[] = [
@@ -114,7 +119,8 @@ export class GameMasterAgent extends Agent {
     memory: MemoryStore,
     config: HarnessConfig,
     private engine: SimEngine,
-    private llm: LlmProvider
+    private bus: SimulationBus,
+    private languageModel: LanguageModel
   ) {
     super("game_master", "game_master", memory, config);
   }
@@ -127,7 +133,9 @@ export class GameMasterAgent extends Agent {
     const card = this.pickDailyEventCard(state.day);
     const text = this.config.mockMode
       ? `Morning brief: ${card.publicText}`
-      : await this.llm.generateMorningBrief(state, card);
+      : await this.languageModel.completeText(
+          assembleMorningBriefPrompt(state, card)
+        );
 
     const event: SimEvent = {
       id: makeLedgerId("gm-brief", state.day),
@@ -139,17 +147,31 @@ export class GameMasterAgent extends Agent {
     };
 
     this.engine.appendEvent(event);
-    await this.writeMemory(text, {
-      memoryType: "summary",
-      day: state.day,
-      locationId: "global",
-      locationType: "global",
-      participants: [],
-      tags: card.tags,
-      importance: 70,
-      sourceEventId: event.id,
+    this.bus.publish({
+      id: makeLedgerId("gm-narration", event.id),
+      type: "gm_narration",
       timestamp: event.timestamp,
-    }, event.id);
+      day: state.day,
+      narrationKind: "morning_brief",
+      text,
+      sourceEvent: event,
+    });
+
+    await this.writeMemory(
+      text,
+      {
+        memoryType: "summary",
+        day: state.day,
+        locationId: "global",
+        locationType: "global",
+        participants: [],
+        tags: card.tags,
+        importance: 70,
+        sourceEventId: event.id,
+        timestamp: event.timestamp,
+      },
+      event.id
+    );
 
     return event;
   }
@@ -157,7 +179,9 @@ export class GameMasterAgent extends Agent {
   async publishDaySummary(state: SimTickState): Promise<SimEvent> {
     const text = this.config.mockMode
       ? `Day ${state.day} closes with ${state.eventLog.length} logged events.`
-      : await this.llm.generateDaySummary(state, state.eventLog);
+      : await this.languageModel.completeText(
+          assembleDaySummaryPrompt(state, state.eventLog)
+        );
 
     const event: SimEvent = {
       id: makeLedgerId("gm-summary", state.day),
@@ -168,17 +192,31 @@ export class GameMasterAgent extends Agent {
     };
 
     this.engine.appendEvent(event);
-    await this.writeMemory(text, {
-      memoryType: "summary",
-      day: state.day,
-      locationId: "global",
-      locationType: "global",
-      participants: [],
-      tags: ["daily_summary"],
-      importance: 60,
-      sourceEventId: event.id,
+    this.bus.publish({
+      id: makeLedgerId("gm-narration", event.id),
+      type: "gm_narration",
       timestamp: event.timestamp,
-    }, event.id);
+      day: state.day,
+      narrationKind: "day_summary",
+      text,
+      sourceEvent: event,
+    });
+
+    await this.writeMemory(
+      text,
+      {
+        memoryType: "summary",
+        day: state.day,
+        locationId: "global",
+        locationType: "global",
+        participants: [],
+        tags: ["daily_summary"],
+        importance: 60,
+        sourceEventId: event.id,
+        timestamp: event.timestamp,
+      },
+      event.id
+    );
 
     return event;
   }
@@ -205,6 +243,16 @@ export class GameMasterAgent extends Agent {
     };
 
     this.engine.appendEvent(event);
+    this.bus.publish({
+      id: makeLedgerId("gm-narration", event.id),
+      type: "gm_narration",
+      timestamp: event.timestamp,
+      day: event.day,
+      narrationKind: "adjudication",
+      text: summary,
+      sourceEvent: event,
+    });
+
     return event;
   }
 }

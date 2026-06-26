@@ -10,8 +10,11 @@ This repo uses an Interpretable Context Methodology workspace in `icm/`.
 Before planning or coding substantial changes, read:
 
 1. `icm/CONTEXT.md` for stage routing.
-2. The relevant `icm/stages/*/CONTEXT.md` for the current task.
-3. Only the `_config` references named by that stage.
+2. `icm/STATUS.md` for current progress, partial runtime, and divergences.
+3. The relevant `icm/stages/*/CONTEXT.md` for the current task.
+4. Only the `_config` references named by that stage.
+
+After meaningful docs or runtime edits, update `icm/STATUS.md` before handoff.
 
 Keep the existing event rule in `.cursor/rules/event.mdc` active: this is a
 hackathon prototype, so optimize for one working demo path, not production

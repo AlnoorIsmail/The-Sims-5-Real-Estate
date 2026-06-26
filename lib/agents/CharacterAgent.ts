@@ -1,18 +1,22 @@
 import type { SimEngine } from "@/lib/sim/engine-interface";
 import type { CharacterAgentState } from "@/lib/sim/types";
 import { Agent } from "./Agent";
+import type { SimulationBus } from "./bus/simulation-bus";
 import { CharacterGraph } from "./character-graph";
 import type { IdempotencyLedger } from "./idempotency";
+import type { LanguageModel } from "./llm/language-model";
 import type { MemoryStore } from "./memory";
 import type { AdaptiveLimiter } from "./scheduler";
 import type {
   CharacterIdentity,
+  CharacterLlmConfig,
   GraphRunResult,
   HarnessConfig,
-  LlmProvider,
 } from "./types";
 
 export class CharacterAgent extends Agent {
+  readonly languageModel: LanguageModel;
+
   constructor(
     public readonly identity: CharacterIdentity,
     public readonly state: CharacterAgentState,
@@ -21,9 +25,15 @@ export class CharacterAgent extends Agent {
     private engine: SimEngine,
     private limiter: AdaptiveLimiter,
     private ledger: IdempotencyLedger,
-    private llm: LlmProvider
+    private bus: SimulationBus,
+    languageModel: LanguageModel
   ) {
     super(identity.agentId, "character", memory, config);
+    this.languageModel = languageModel;
+  }
+
+  get llmConfig(): CharacterLlmConfig | undefined {
+    return this.identity.llm;
   }
 
   createGraph(): CharacterGraph {
@@ -32,7 +42,8 @@ export class CharacterAgent extends Agent {
       memory: this.memory,
       limiter: this.limiter,
       ledger: this.ledger,
-      llm: this.llm,
+      languageModel: this.languageModel,
+      bus: this.bus,
       config: this.config,
       identity: this.identity,
     });

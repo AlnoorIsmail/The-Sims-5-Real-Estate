@@ -8,6 +8,7 @@ import type {
   SimEvent,
   SimTickState,
 } from "@/lib/sim/types";
+import type { HarnessToolCall } from "./llm/language-model";
 
 export type AgentRole = "character" | "landlord" | "game_master";
 
@@ -29,6 +30,15 @@ export interface PersonaCard {
   flawOrStressor: string;
 }
 
+export type LlmBackend = "gemini" | "openai";
+
+/** Per-agent LLM credentials supplied at instantiation (server-side only). */
+export interface CharacterLlmConfig {
+  apiKey: string;
+  backend?: LlmBackend;
+  model?: string;
+}
+
 export interface CharacterIdentity {
   agentId: string;
   displayName: string;
@@ -36,6 +46,8 @@ export interface CharacterIdentity {
   gender: "male" | "female";
   persona: PersonaCard;
   modifiers?: string[];
+  /** Each character agent carries its own provider credentials. */
+  llm?: CharacterLlmConfig;
 }
 
 export interface EndpointCandidate {
@@ -69,7 +81,6 @@ export interface AgentContextBundle {
   reflections: RetrievedMemory[];
   recentLocalEvents: SimEvent[];
   availableActions: AvailableAction[];
-  outputSchema: Record<string, unknown>;
   budgetSummary?: LandlordBudgetSummary;
 }
 
@@ -119,7 +130,7 @@ export interface LlmDecision {
   id: string;
   node: GraphNodeName;
   agentId: string;
-  output: BareToolProposal | PerceptionDigestOutput | ReflectionOutput | null;
+  output: HarnessToolCall | string | PerceptionDigestOutput | null;
   createdAt: number;
 }
 
@@ -139,6 +150,9 @@ export interface ReflectionOutput {
   metadata: Partial<MemoryRecordMetadata>;
   goalUpdates?: Partial<GoalState>;
 }
+
+// Re-export for harness consumers
+export type { HarnessToolCall } from "./llm/language-model";
 
 export interface LandlordActionCard {
   id: string;
@@ -174,6 +188,8 @@ export interface HarnessConfig {
   mockMode: boolean;
   chromaEnabled: boolean;
   geminiEmbeddingModel: string;
+  geminiModel: string;
+  openaiModel: string;
   chromaHost: string;
   apiRateLimitPerMinute: number;
   landlordCardTimeoutMs: number;
@@ -185,6 +201,8 @@ export const DEFAULT_HARNESS_CONFIG: HarnessConfig = {
   mockMode: true,
   chromaEnabled: false,
   geminiEmbeddingModel: "gemini-embedding-001",
+  geminiModel: "gemini-2.0-flash",
+  openaiModel: "gpt-4o-mini",
   chromaHost: "http://localhost:8000",
   apiRateLimitPerMinute: 30,
   landlordCardTimeoutMs: 15_000,
@@ -192,15 +210,12 @@ export const DEFAULT_HARNESS_CONFIG: HarnessConfig = {
   reflectionEventThreshold: 7,
 };
 
-export interface LlmProvider {
-  proposeAction(context: AgentContextBundle): Promise<BareToolProposal>;
-  digestPerceptions(
-    context: AgentContextBundle,
-    rawTexts: string[]
-  ): Promise<PerceptionDigestOutput>;
-  reflect(context: AgentContextBundle): Promise<ReflectionOutput>;
-  generateMorningBrief(state: SimTickState, card: GameMasterEventCard): Promise<string>;
-  generateDaySummary(state: SimTickState, events: SimEvent[]): Promise<string>;
+export interface HarnessOptions {
+  initialState?: SimTickState;
+  config?: HarnessConfig;
+  /** Explicit per-character LLM configs override identity.llm and env resolution. */
+  characterLlmConfigs?: Record<string, CharacterLlmConfig>;
+  gameMasterLlm?: CharacterLlmConfig;
 }
 
 export interface GraphRunResult {

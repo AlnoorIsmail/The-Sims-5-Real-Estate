@@ -5,9 +5,8 @@ import type {
   AvailableAction,
   CharacterIdentity,
   EndpointCandidate,
-  HarnessConfig,
 } from "./types";
-import { BARE_TOOL_OUTPUT_SCHEMA, VERB_TARGET_MAP } from "./verbs";
+import { VERB_TARGET_MAP } from "./verbs";
 
 const SYSTEM_RULES = [
   "You are a resident agent in a property-management life simulator.",
@@ -81,7 +80,6 @@ export function assembleCharacterContext(
     reflections: [],
     recentLocalEvents: state.eventLog.slice(-6),
     availableActions,
-    outputSchema: BARE_TOOL_OUTPUT_SCHEMA,
     budgetSummary,
   };
 }

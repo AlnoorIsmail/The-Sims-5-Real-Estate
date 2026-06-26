@@ -1,21 +1,27 @@
 import type { SimEngine } from "@/lib/sim/engine-interface";
 import { StubSimEngine } from "@/lib/sim/engine-interface";
 import type { BareToolAction, SimTickState } from "@/lib/sim/types";
+import { SimulationBus } from "./bus/simulation-bus";
 import { CharacterAgent } from "./CharacterAgent";
 import { GameMasterAgent } from "./GameMasterAgent";
 import { LandlordAgent } from "./LandlordAgent";
 import { IdempotencyLedger } from "./idempotency";
-import { createLlmProvider } from "./llm-provider";
+import {
+  createLanguageModelFromConfig,
+  mergeCharacterLlmConfig,
+  resolveGameMasterLlmFromEnv,
+} from "./llm-provider";
 import { createMemoryStore } from "./memory";
 import { createDemoTickState, getDemoIdentities } from "./seed";
 import { AdaptiveLimiter } from "./scheduler";
-import type { HarnessConfig, LandlordActionCard } from "./types";
+import type { HarnessConfig, HarnessOptions, LandlordActionCard } from "./types";
 import { DEFAULT_HARNESS_CONFIG } from "./types";
 import { getVerbRule } from "./verbs";
 
 export interface AgentHarness {
   config: HarnessConfig;
   engine: SimEngine;
+  bus: SimulationBus;
   landlord: LandlordAgent;
   gameMaster: GameMasterAgent;
   characters: CharacterAgent[];
@@ -28,41 +34,96 @@ export interface AgentHarness {
   routeLandlordFacingAction(action: BareToolAction): LandlordActionCard | null;
 }
 
-export function createAgentHarness(
-  initialState?: SimTickState,
-  config: HarnessConfig = DEFAULT_HARNESS_CONFIG
-): AgentHarness {
-  const state = initialState ?? createDemoTickState();
+export function createAgentHarness(options: HarnessOptions = {}): AgentHarness {
+  const config = options.config ?? DEFAULT_HARNESS_CONFIG;
+  const state = options.initialState ?? createDemoTickState();
   const engine = new StubSimEngine(state);
   const memory = createMemoryStore(config);
   const ledger = new IdempotencyLedger();
   const limiter = new AdaptiveLimiter(config);
-  const llm = createLlmProvider(config.mockMode);
+  const bus = new SimulationBus();
+
+  const gameMasterLlmConfig =
+    options.gameMasterLlm ?? resolveGameMasterLlmFromEnv();
+  const gameMasterLanguageModel = createLanguageModelFromConfig(
+    gameMasterLlmConfig,
+    config
+  );
 
   const landlord = new LandlordAgent(memory, config, engine.getLandlord().budgetAed);
-  const gameMaster = new GameMasterAgent(memory, config, engine, llm);
+  const gameMaster = new GameMasterAgent(
+    memory,
+    config,
+    engine,
+    bus,
+    gameMasterLanguageModel
+  );
 
   const identities = getDemoIdentities(state.landlord.runControls.seed);
   const characters = identities
     .map((identity) => {
       const characterState = engine.getCharacter(identity.agentId);
       if (!characterState) return null;
+
+      const llmConfig = mergeCharacterLlmConfig(
+        identity.agentId,
+        identity.llm,
+        options.characterLlmConfigs?.[identity.agentId]
+      );
+      const languageModel = createLanguageModelFromConfig(llmConfig, config);
+
       return new CharacterAgent(
-        identity,
+        { ...identity, llm: llmConfig },
         characterState,
         memory,
         config,
         engine,
         limiter,
         ledger,
-        llm
+        bus,
+        languageModel
       );
     })
     .filter((agent): agent is CharacterAgent => agent !== null);
 
+  const characterById = new Map(characters.map((c) => [c.id, c]));
+
+  bus.subscribe((message) => {
+    if (message.type === "speech_published") {
+      const target = characterById.get(message.targetId);
+      target?.queueRawPerception(
+        `${message.speakerId} said: "${message.message}"`,
+        message.sourceActionId
+      );
+      return;
+    }
+
+    if (message.type === "tool_intent_submitted") {
+      const rule = getVerbRule(message.action.verb);
+      if (rule?.routesTo === "landlord") {
+        const card = landlord.enqueueFromAction(message.action);
+        if (card) {
+          bus.publish({
+            id: `landlord-queue-${card.id}`,
+            type: "landlord_request_queued",
+            timestamp: Date.now(),
+            day: message.day,
+            card,
+            sourceActionId: message.action.id,
+          });
+        }
+      } else if (rule?.routesTo === "game_master") {
+        gameMaster.adjudicateProposal(message.action);
+      } else if (rule?.routesTo === "engine") {
+        engine.submitToolIntent(message.action);
+      }
+    }
+  });
+
   const harness: AgentHarness = {
     config,
     engine,
+    bus,
     landlord,
     gameMaster,
     characters,
@@ -79,24 +140,7 @@ export function createAgentHarness(
 
     async runAutonomyTick(tick: number) {
       for (const character of characters) {
-        const result = await character.runAutonomyTick(tick);
-        if (!result.proposal) continue;
-
-        const action: BareToolAction = {
-          id: `${result.runId}:action`,
-          agentId: result.agentId,
-          verb: result.proposal.verb,
-          targetType: result.proposal.targetType,
-          targetId: result.proposal.targetId,
-          args: result.proposal.args,
-        };
-
-        const rule = getVerbRule(action.verb);
-        if (rule?.routesTo === "landlord") {
-          harness.routeLandlordFacingAction(action);
-        } else if (rule?.routesTo === "game_master") {
-          gameMaster.adjudicateProposal(action);
-        }
+        await character.runAutonomyTick(tick);
       }
       harness.handleLandlordTimeouts();
     },

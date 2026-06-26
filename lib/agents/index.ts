@@ -5,6 +5,18 @@ export { GameMasterAgent, GM_EVENT_DECK } from "./GameMasterAgent";
 export { CharacterGraph } from "./character-graph";
 export { createAgentHarness } from "./harness";
 export type { AgentHarness } from "./harness";
+export { SimulationBus } from "./bus/simulation-bus";
+export type { SimulationMessage } from "./bus/message-types";
+export { buildActionCatalog } from "./routing/action-catalog";
+export { routeToolCall, toolCallToProposal } from "./routing/tool-call-router";
+export {
+  assembleDecideActionPrompt,
+  assembleDigestPrompt,
+  assembleReflectionPrompt,
+  assembleMorningBriefPrompt,
+  assembleDaySummaryPrompt,
+  mapDigestTextToPerceptions,
+} from "./prompts/assembler";
 export { IdempotencyLedger, makeLedgerId } from "./idempotency";
 export { createMemoryStore, InMemoryMemoryStore } from "./memory";
 export { AdaptiveLimiter, sceneScoreForCharacter } from "./scheduler";
@@ -15,23 +27,36 @@ export { createDemoTickState, createDemoBuilding, getDemoIdentities } from "./se
 export {
   VERB_TARGET_MAP,
   LANDLORD_FACING_VERBS,
-  BARE_TOOL_OUTPUT_SCHEMA,
   getVerbRule,
   isValidBareTool,
 } from "./verbs";
+export { DEFAULT_HARNESS_CONFIG } from "./types";
 export {
-  DEFAULT_HARNESS_CONFIG,
-} from "./types";
+  GeminiLanguageModel,
+  OpenAiLanguageModel,
+  createLanguageModelFromConfig,
+  mergeCharacterLlmConfig,
+  resolveCharacterLlmFromEnv,
+  resolveGameMasterLlmFromEnv,
+} from "./llm";
 export type {
   AgentContextBundle,
   AgentRole,
   BareToolProposal,
   CharacterIdentity,
+  CharacterLlmConfig,
   GameMasterEventCard,
   GraphNodeName,
   GraphRunResult,
   HarnessConfig,
+  HarnessOptions,
   LandlordActionCard,
-  LlmProvider,
+  LlmBackend,
   PersonaCard,
+  PerceptionDigestOutput,
 } from "./types";
+export type {
+  LanguageModel,
+  HarnessToolCall,
+  HarnessToolDefinition,
+} from "./llm";
