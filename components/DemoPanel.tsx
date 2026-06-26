@@ -1,103 +1,133 @@
-"use client";
-
-import { useState } from "react";
 import type { Track } from "./TrackBadge";
-import { mockInference } from "@/lib/sampleData";
 
-/**
- * The interactive heart of the template:
- * input → "Run Prototype" → AI output.
- *
- * By default it calls mockInference() from lib/sampleData.ts — a local,
- * key-free stand-in so the template works immediately. Replace the body of
- * runPrototype() with a real model call.
- */
-export default function DemoPanel({ track }: { track: Track }) {
-  const [input, setInput] = useState(
-    "Which vacant parcels have the highest development potential?"
-  );
-  const [output, setOutput] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+const TRACK_COPY: Record<Track, string> = {
+  land: "Good land decisions need more than a cheap price.",
+  investment: "A good purchase should have value upside, sensible costs, and manageable risk.",
+  communities: "A strong area should support demand, access, and quality of life.",
+  decision: "A clear decision should show the result and the reasons behind it.",
+};
 
-  async function runPrototype() {
-    setLoading(true);
-    setOutput(null);
-    try {
-      // ── CONNECT YOUR MODEL HERE ──────────────────────────────────
-      // Best practice: create app/api/run/route.ts and call your provider
-      // there, so API keys stay server-side. Then replace the line below with:
-      //   const res = await fetch("/api/run", {
-      //     method: "POST",
-      //     body: JSON.stringify({ input, track }),
-      //   });
-      //   const { text } = await res.json();
-      //
-      // Inside that route handler, pick your provider:
-      //
-      // • OpenAI:        const client = new OpenAI();            // OPENAI_API_KEY
-      // • Anthropic:     const client = new Anthropic();         // ANTHROPIC_API_KEY
-      // • Hugging Face:  fetch("https://api-inference.huggingface.co/...", { headers: { Authorization: `Bearer ${process.env.HF_TOKEN}` } })
-      // • Local (Ollama): fetch(`${process.env.LOCAL_MODEL_URL}/api/generate`, ...)
-      // • Custom API:    fetch(process.env.CUSTOM_API_URL!, ...)
-      //
-      // The mock below simulates latency and returns a structured answer
-      // from the sample data — delete it once your model is wired up.
-      const text = await mockInference(input, track);
-      // ─────────────────────────────────────────────────────────────
-      setOutput(text);
-    } catch (err) {
-      setOutput(
-        `Something went wrong: ${err instanceof Error ? err.message : String(err)}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+const CHECK_CARDS = [
+  {
+    label: "Value check",
+    title: "What could it be worth?",
+    detail: "Compares the property details with the selected area and property type.",
+  },
+  {
+    label: "Profit check",
+    title: "Is there room after costs?",
+    detail: "Looks at purchase cost, development cost, estimated value, and margin.",
+  },
+  {
+    label: "Risk check",
+    title: "What could weaken the deal?",
+    detail: "Highlights area quality, infrastructure, and warning signs before you commit.",
+  },
+];
 
+const RESULT_ITEMS = [
+  "A clear buy, review, or avoid recommendation",
+  "Estimated value and profit",
+  "Confidence score out of 100",
+  "Main factors behind the answer",
+  "Warnings to review before making a real decision",
+];
+
+function CheckCard({
+  label,
+  title,
+  detail,
+}: {
+  label: string;
+  title: string;
+  detail: string;
+}) {
   return (
-    <section id="demo" className="mt-12">
-      <h2 className="text-lg font-semibold tracking-tight">Prototype demo</h2>
-      <p className="mt-1 text-sm text-sand-50/60">
-        Ask a question, hit Run. Currently powered by a local mock — connect
-        your model in{" "}
-        <code className="rounded bg-night-800 px-1.5 py-0.5 text-xs">
-          components/DemoPanel.tsx
-        </code>
-        .
-      </p>
+    <div className="rounded-lg border border-[#ded7c9] bg-white p-4 shadow-sm">
+      <p className="text-xs font-medium text-[#718078]">{label}</p>
+      <p className="mt-2 text-base font-semibold text-[#17201f]">{title}</p>
+      <p className="mt-3 text-xs leading-relaxed text-[#738079]">{detail}</p>
+    </div>
+  );
+}
 
-      <div className="mt-4 rounded-xl border border-white/10 bg-night-800/60 p-5">
-        <label
-          htmlFor="prototype-input"
-          className="text-xs font-medium uppercase tracking-wider text-sand-50/50"
-        >
-          Input
-        </label>
-        <textarea
-          id="prototype-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          rows={2}
-          className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-night-900 p-3 text-sm outline-none transition focus:border-white/30"
-        />
-        <button
-          onClick={runPrototype}
-          disabled={loading || input.trim() === ""}
-          className="mt-3 rounded-lg bg-sand-50 px-5 py-2 text-sm font-semibold text-night-900 transition hover:bg-sand-100 disabled:opacity-40"
-        >
-          {loading ? "Running…" : "Run Prototype"}
-        </button>
+function LogicStep({ index, title, text }: { index: string; title: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#23443d] text-xs font-semibold text-white">
+        {index}
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-[#17201f]">{title}</p>
+        <p className="mt-1 text-sm leading-relaxed text-[#64716b]">{text}</p>
+      </div>
+    </div>
+  );
+}
 
-        {/* AI output placeholder — style this however your demo needs */}
-        <div className="mt-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-sand-50/50">
-            AI output
+export default function DemoPanel({ track }: { track: Track }) {
+  return (
+    <section className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-5 shadow-[0_18px_50px_rgba(45,38,24,0.08)]">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6e7d76]">
+            How it helps
           </p>
-          <div className="mt-2 min-h-[96px] whitespace-pre-wrap rounded-lg border border-dashed border-white/10 bg-night-900/60 p-4 text-sm leading-relaxed text-sand-50/90">
-            {loading
-              ? "Thinking…"
-              : output ??
-                "Output will appear here. Run the prototype to see the mock engine respond — then make it real."}
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#17201f]">
+            A quick second opinion before you buy
+          </h2>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[#64716b]">
+            {TRACK_COPY[track]} This screen brings the key numbers together so
+            you can spot attractive deals and avoid weak ones faster.
+          </p>
+        </div>
+        <span className="rounded-full border border-[#d8d1c3] bg-white px-3 py-1 text-[11px] font-semibold text-[#66736e]">
+          plain-language result
+        </span>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {CHECK_CARDS.map((card) => (
+          <CheckCard key={card.label} {...card} />
+        ))}
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_0.85fr]">
+        <div className="rounded-lg border border-[#ded7c9] bg-white p-4">
+          <p className="text-sm font-semibold text-[#17201f]">How to read it</p>
+          <div className="mt-4 space-y-4">
+            <LogicStep
+              index="1"
+              title="Enter the property details"
+              text="Choose the area, property type, size, purchase cost, and expected development cost."
+            />
+            <LogicStep
+              index="2"
+              title="Review the numbers"
+              text="Check the estimated value, expected profit, score, and the main factors behind the answer."
+            />
+            <LogicStep
+              index="3"
+              title="Use the warnings"
+              text="If the margin is thin or the area risk is high, slow down and review before moving forward."
+            />
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-[#ded7c9] bg-white p-4">
+          <p className="text-sm font-semibold text-[#17201f]">What you get</p>
+          <p className="mt-1 text-xs leading-relaxed text-[#718078]">
+            A simple view for comparing the deal, not a final financial opinion.
+          </p>
+          <div className="mt-4 space-y-2">
+            {RESULT_ITEMS.map((item) => (
+              <div
+                key={item}
+                className="rounded-md border border-[#ebe4d7] bg-[#faf8f2] px-3 py-2 text-xs text-[#52605a]"
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </div>
       </div>

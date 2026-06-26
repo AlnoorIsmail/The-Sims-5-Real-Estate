@@ -3,20 +3,20 @@ export type Track = "land" | "investment" | "communities" | "decision";
 
 const TRACKS: Record<Track, { label: string; classes: string }> = {
   land: {
-    label: "Land Intelligence",
-    classes: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/30",
+    label: "Land opportunities",
+    classes: "bg-[#e7f2ed] text-[#2f6f5d] ring-[#b7d6ca]",
   },
   investment: {
-    label: "Investment Intelligence",
-    classes: "bg-violet-400/10 text-violet-300 ring-violet-400/30",
+    label: "For buyers & investors",
+    classes: "bg-[#ebeef6] text-[#55627c] ring-[#cbd2e3]",
   },
   communities: {
-    label: "Future Communities",
-    classes: "bg-amber-400/10 text-amber-300 ring-amber-400/30",
+    label: "Area quality",
+    classes: "bg-[#fff2d8] text-[#8a651e] ring-[#e8d19f]",
   },
   decision: {
-    label: "Decision Intelligence",
-    classes: "bg-sky-400/10 text-sky-300 ring-sky-400/30",
+    label: "Clear recommendation",
+    classes: "bg-[#e3f1f3] text-[#2f7280] ring-[#b7d5db]",
   },
 };
 
