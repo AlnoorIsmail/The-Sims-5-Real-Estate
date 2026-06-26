@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-06-26T09:06:57.361412+00:00",
+  "status": "failed",
+  "gates": [],
+  "warnings": [],
+  "errors": [
+    {
+      "message": "UAE_DATA_API_KEY is not set. Export it before fetching live UAE API data, for example: export UAE_DATA_API_KEY=\"uae_...\"",
+      "gate": "api_predict_and_score"
+    }
+  ],
+  "metrics": {
+    "listings_source": "live_api"
+  }
+}
