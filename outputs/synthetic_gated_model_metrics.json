@@ -1,15 +1,40 @@
 {
-  "generated_at": "2026-06-26T09:55:45.923924+00:00",
+  "generated_at": "2026-06-26T10:03:51.181250+00:00",
   "data_source": "synthetic_external_listings_raw.csv",
-  "target": "synthetic_fair_price_per_sqm",
-  "model": "price_per_sqm_catboost_regressor.joblib",
   "raw_rows": 50000,
-  "cleaned_rows": 47479,
-  "mapped_coverage": 0.8978,
-  "scored_rows": 29735,
-  "metric_rows": 29735,
-  "mae": 525.4983648654328,
-  "rmse": 704.5351191339574,
-  "r2": 0.980197409203228,
-  "median_absolute_percentage_error_pct": 3.266395656460439
+  "cleaned_rows": 47582,
+  "mapped_coverage": 0.8961,
+  "scored_rows": 29757,
+  "targets": {
+    "price_per_sqm": {
+      "model": "price_per_sqm_catboost_regressor.joblib",
+      "label_column": "synthetic_fair_price_per_sqm",
+      "prediction_column": "predicted_price_per_sqm",
+      "metric_rows": 29757,
+      "mae": 655.4671073480043,
+      "rmse": 890.0585188310392,
+      "r2": 0.9687738562618932,
+      "median_absolute_percentage_error_pct": 4.037393648106204
+    },
+    "estimated_value_aed": {
+      "model": "estimated_value_aed_xgb_regressor.joblib",
+      "label_column": "synthetic_estimated_value_aed",
+      "prediction_column": "predicted_estimated_value_aed",
+      "metric_rows": 29757,
+      "mae": 8827341.0,
+      "rmse": 13827175.7039731,
+      "r2": 0.8970525860786438,
+      "median_absolute_percentage_error_pct": 11.295516349094331
+    },
+    "development_potential_score": {
+      "model": "development_potential_score_catboost_regressor.joblib",
+      "label_column": "synthetic_development_potential_score",
+      "prediction_column": "predicted_development_potential_score",
+      "metric_rows": 29757,
+      "mae": 10.079995402121064,
+      "rmse": 12.535531276839428,
+      "r2": -0.22616954149253443,
+      "median_absolute_percentage_error_pct": 12.12248227070668
+    }
+  }
 }

@@ -57,8 +57,7 @@ Synthetic listing rows must pass quality gates before scoring:
 - cleaned rows have valid price and built-up area
 - area values map to model-compatible districts
 - listing features satisfy the transaction model contract
-- parcel/development models are only used when a listing row has compatible
-  parcel fields
+- parcel/development features satisfy the parcel model contract
 
 The transaction price model benchmarks each listing by predicting expected
 `price_per_sqm`. The pipeline compares that estimate with the observed
@@ -67,25 +66,30 @@ The transaction price model benchmarks each listing by predicting expected
 gap, district gross yield, infrastructure score, profile, and mapping
 confidence.
 
-Synthetic accuracy is measured against the evaluation-only
-`synthetic_fair_price_per_sqm` column. That column must not be used as a model
-input feature.
+The synthetic gated scorer now emits all three model predictions:
+
+- `predicted_price_per_sqm`
+- `predicted_estimated_value_aed`
+- `predicted_development_potential_score`
+
+Synthetic accuracy is measured against evaluation-only `synthetic_*` label
+columns. Those columns must not be used as model input features.
 
 The current generator is intentionally model-aligned without leaking the target:
 it emits transaction-compatible `asset_type`, `buyer_type`, size, district, and
-listing-date fields, while keeping `synthetic_fair_price_per_sqm` as an
-evaluation-only label. Raw observed prices still include portal-style noise,
-outliers, missing values, and rent/sale messiness.
+listing-date fields plus parcel-compatible zoning, land-use, parcel-size,
+status, community, and amenity features. Raw observed prices still include
+portal-style noise, outliers, missing values, and rent/sale messiness.
 
 Current optimized synthetic gated benchmark:
 
 - raw rows: `50,000`
-- cleaned rows: `47,479`
-- scored rows: `29,735`
-- mapping coverage: `89.78%`
-- R2 vs `synthetic_fair_price_per_sqm`: `0.980`
-- MAE: `525 AED/sqm`
-- median absolute percentage error: `3.27%`
+- cleaned rows: `47,582`
+- scored rows: `29,757`
+- mapping coverage: `89.61%`
+- price per sqm R2: `0.969`, MAE `655 AED/sqm`
+- estimated value R2: `0.897`, MAE `8.83M AED`
+- development potential R2: `-0.226`, MAE `10.08 pts`
 
 The synthetic gated pipeline writes:
 

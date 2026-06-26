@@ -3,7 +3,8 @@
 The hidden fair-price label follows the same district, asset-type, date, and
 appreciation structure as the starter-kit transaction data. Raw listing prices
 still include portal-style noise and quality issues so the gated pipeline has
-real cleaning work to do.
+real cleaning work to do. Rows also carry parcel-compatible synthetic fields so
+the gated scorer can run all three existing model artifacts.
 """
 
 from __future__ import annotations
@@ -82,6 +83,38 @@ PROPERTY_TYPES = [
     ("penthouse", 1, (190, 520), (3, 5), "apartment", 1.0),
 ]
 
+LAND_USES = [
+    ("residential", 5),
+    ("mixed_use", 3),
+    ("commercial", 3),
+    ("hospitality", 2),
+    ("community", 2),
+    ("industrial", 2),
+]
+ZONE_PREFIX = {
+    "residential": "RES",
+    "mixed_use": "MIX",
+    "commercial": "COM",
+    "hospitality": "HOS",
+    "community": "CMU",
+    "industrial": "IND",
+}
+CURRENT_STATUS = [
+    ("vacant", 4),
+    ("under_development", 3),
+    ("developed", 4),
+    ("reserved", 1),
+]
+LANDUSE_SQM = {
+    "residential": (6000, 26000),
+    "mixed_use": (6000, 30000),
+    "commercial": (3500, 12000),
+    "hospitality": (5000, 22000),
+    "community": (8000, 18000),
+    "industrial": (12000, 45000),
+}
+LAND_VALUE_FACTOR = 0.35
+
 QUALITY_CASES = [
     ("clean", 68),
     ("missing_area", 5),
@@ -146,15 +179,121 @@ def _price_multiplier(rng: random.Random, quality_case: str) -> float:
     return round(_noise(rng, 0.13), 4)
 
 
+def _community_profile(
+    rng: random.Random,
+    profile: str,
+    infrastructure_score: int,
+) -> dict[str, float]:
+    demand_base = {
+        "premium": 48,
+        "established": 55,
+        "mid_high": 60,
+        "leisure": 58,
+        "high": 57,
+        "innovation": 45,
+        "mid": 70,
+        "emerging": 74,
+        "mid_affordable": 80,
+        "affordable": 84,
+        "industrial": 86,
+        "border": 82,
+        "coastal": 67,
+    }.get(profile, 65)
+    demand = int(min(95, max(35, rng.gauss(demand_base, 7))))
+    mobility = int(min(95, max(45, infrastructure_score - 5 + rng.gauss(0, 8))))
+    resident_experience = int(
+        min(
+            95,
+            max(
+                50,
+                150
+                - demand
+                + rng.gauss(0, 6)
+                - (5 if profile == "industrial" else 0),
+            ),
+        )
+    )
+    return {
+        "avg_population_estimate": round(max(4000, rng.gauss(60000, 45000)), 2),
+        "avg_occupancy_rate": round(min(0.98, max(0.65, rng.gauss(0.88, 0.07))), 4),
+        "avg_service_demand_index": float(demand),
+        "avg_mobility_score": float(mobility),
+        "avg_resident_experience_score": float(min(92, resident_experience)),
+    }
+
+
+def _amenity_profile(rng: random.Random, area_type: str, infrastructure_score: int) -> dict[str, int]:
+    base = max(10, int(infrastructure_score * rng.uniform(1.0, 7.0)))
+    if area_type in {"central", "island", "waterfront"}:
+        base = int(base * rng.uniform(1.25, 1.8))
+    elif area_type in {"border", "coastal"}:
+        base = int(base * rng.uniform(0.55, 0.9))
+
+    education = int(base * rng.uniform(0.04, 0.14))
+    healthcare = int(base * rng.uniform(0.04, 0.18))
+    retail = int(base * rng.uniform(0.08, 0.24))
+    services = int(base * rng.uniform(0.05, 0.18))
+    community = int(base * rng.uniform(0.10, 0.35))
+    mobility = int(base * rng.uniform(0.06, 0.26))
+    total = max(
+        base,
+        education + healthcare + retail + services + community + mobility,
+    )
+    return {
+        "amenity_count_total": total,
+        "amenity_count_education": education,
+        "amenity_count_healthcare": healthcare,
+        "amenity_count_retail": retail,
+        "amenity_count_services": services,
+        "amenity_count_community": community,
+        "amenity_count_mobility": mobility,
+    }
+
+
+def _development_score(
+    rng: random.Random,
+    infrastructure_score: int,
+    current_status: str,
+    land_use: str,
+    community: dict[str, float],
+    amenities: dict[str, int],
+) -> int:
+    status_bonus = {
+        "vacant": 12,
+        "under_development": 8,
+        "reserved": 3,
+        "developed": -6,
+    }[current_status]
+    land_use_bonus = {
+        "mixed_use": 6,
+        "commercial": 4,
+        "residential": 3,
+        "hospitality": 2,
+        "community": 1,
+        "industrial": -4,
+    }[land_use]
+    score = (
+        0.32 * infrastructure_score
+        + 0.23 * community["avg_service_demand_index"]
+        + 0.15 * community["avg_mobility_score"]
+        + 0.10 * community["avg_resident_experience_score"]
+        + 0.05 * min(100, amenities["amenity_count_total"] / 8)
+        + status_bonus
+        + land_use_bonus
+        + rng.gauss(0, 6)
+    )
+    return int(min(100, max(30, round(score))))
+
+
 def _base_row(rng: random.Random, row_number: int) -> dict:
     district = rng.choice(DISTRICTS)
     (
         district_name,
-        _area_type,
-        _profile,
+        area_type,
+        profile,
         base_sale_aed_sqm,
         gross_yield_pct,
-        _infrastructure_score,
+        infrastructure_score,
         latitude,
         longitude,
     ) = district
@@ -223,6 +362,33 @@ def _base_row(rng: random.Random, row_number: int) -> dict:
     if quality_case == "missing_building_id":
         building_id = ""
 
+    land_use = _weighted_value(rng, LAND_USES)
+    parcel_size_min, parcel_size_max = LANDUSE_SQM[land_use]
+    parcel_size_sqm = rng.randint(parcel_size_min, parcel_size_max)
+    current_status = _weighted_value(rng, CURRENT_STATUS)
+    parcel_infrastructure_score = int(
+        min(100, max(35, infrastructure_score + rng.gauss(0, 6)))
+    )
+    community_profile = _community_profile(rng, profile, infrastructure_score)
+    amenity_profile = _amenity_profile(rng, area_type, infrastructure_score)
+    synthetic_estimated_value_aed = int(
+        round(
+            base_sale_aed_sqm
+            * LAND_VALUE_FACTOR
+            * parcel_size_sqm
+            * _noise(rng, 0.12),
+            -4,
+        )
+    )
+    synthetic_development_potential_score = _development_score(
+        rng,
+        parcel_infrastructure_score,
+        current_status,
+        land_use,
+        community_profile,
+        amenity_profile,
+    )
+
     return {
         "listing_id": f"SYN-LST-{row_number:06d}",
         "price": output_price,
@@ -238,8 +404,17 @@ def _base_row(rng: random.Random, row_number: int) -> dict:
         "listed_at": listed_at.isoformat(),
         "latitude": _jitter(rng, latitude, 0.018),
         "longitude": _jitter(rng, longitude, 0.022),
+        "zone": f"Z-{ZONE_PREFIX[land_use]}-{rng.randint(1, 5):02d}",
+        "land_use": land_use,
+        "parcel_size_sqm": parcel_size_sqm,
+        "current_status": current_status,
+        "infrastructure_score": parcel_infrastructure_score,
+        **community_profile,
+        **amenity_profile,
         "synthetic_true_district": district_name,
         "synthetic_fair_price_per_sqm": fair_price_per_sqm,
+        "synthetic_estimated_value_aed": synthetic_estimated_value_aed,
+        "synthetic_development_potential_score": synthetic_development_potential_score,
         "synthetic_quality_case": quality_case,
         "synthetic_price_multiplier": price_multiplier,
     }

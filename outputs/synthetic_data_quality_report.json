@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-26T09:55:42.491582+00:00",
-  "status": "passed_with_warnings",
+  "generated_at": "2026-06-26T10:03:47.175195+00:00",
+  "status": "passed",
   "gates": [
     {
       "name": "non_empty",
@@ -25,27 +25,27 @@
     {
       "name": "non_empty",
       "status": "passed",
-      "message": "synthetic_external_listings_clean contains 47479 rows.",
+      "message": "synthetic_external_listings_clean contains 47582 rows.",
       "details": {
         "source_name": "synthetic_external_listings_clean",
-        "row_count": 47479
+        "row_count": 47582
       }
     },
     {
       "name": "min_valid_rows",
       "status": "passed",
-      "message": "47479 valid rows remain after cleaning.",
+      "message": "47582 valid rows remain after cleaning.",
       "details": {
-        "row_count": 47479,
+        "row_count": 47582,
         "min_rows": 50
       }
     },
     {
       "name": "district_mapping_coverage",
       "status": "passed",
-      "message": "District mapping coverage is 89.8%.",
+      "message": "District mapping coverage is 89.6%.",
       "details": {
-        "coverage": 0.8977863897723204,
+        "coverage": 0.8961161783867849,
         "min_coverage": 0.6
       }
     },
@@ -72,27 +72,20 @@
       }
     }
   ],
-  "warnings": [
-    {
-      "message": "Skipped predicted_estimated_value_aed; Missing model features: zone, land_use, parcel_size_sqm, current_status, avg_population_estimate, avg_occupancy_rate, avg_service_demand_index, avg_mobility_score, avg_resident_experience_score, amenity_count_total, amenity_count_education, amenity_count_healthcare, amenity_count_retail, amenity_count_services, amenity_count_community, amenity_count_mobility",
-      "gate": "model_compatibility"
-    },
-    {
-      "message": "Skipped predicted_development_potential_score; Missing model features: zone, land_use, parcel_size_sqm, current_status, avg_population_estimate, avg_occupancy_rate, avg_service_demand_index, avg_mobility_score, avg_resident_experience_score, amenity_count_total, amenity_count_education, amenity_count_healthcare, amenity_count_retail, amenity_count_services, amenity_count_community, amenity_count_mobility",
-      "gate": "model_compatibility"
-    }
-  ],
+  "warnings": [],
   "errors": [],
   "metrics": {
     "listings_source": "synthetic_external_csv",
     "listings_path": "/Users/alnoor.ismail/Documents/GitHub/Guardii/The-Sims-5-Real-Estate/data/raw/synthetic_external_listings_raw.csv",
     "synthetic_external_listings_raw_rows": 50000,
-    "synthetic_external_listings_clean_rows": 47479,
-    "valid_rows_after_cleaning": 47479,
-    "district_mapping_coverage": 0.8978,
-    "sale_compatible_scoring_rows": 29735,
-    "scored_rows": 29735,
-    "synthetic_model_r2": 0.980197409203228,
-    "top_synthetic_opportunity_score": 99.28
+    "synthetic_external_listings_clean_rows": 47582,
+    "valid_rows_after_cleaning": 47582,
+    "district_mapping_coverage": 0.8961,
+    "sale_compatible_scoring_rows": 29757,
+    "scored_rows": 29757,
+    "synthetic_price_per_sqm_r2": 0.9687738562618932,
+    "synthetic_estimated_value_aed_r2": 0.8970525860786438,
+    "synthetic_development_potential_score_r2": -0.22616954149253443,
+    "top_synthetic_opportunity_score": 100.0
   }
 }

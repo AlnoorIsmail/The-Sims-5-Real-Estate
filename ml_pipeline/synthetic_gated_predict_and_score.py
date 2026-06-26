@@ -250,37 +250,70 @@ def _model_metrics(
     cleaned_rows: int,
     mapped_coverage: float,
 ) -> dict[str, Any]:
-    truth = pd.to_numeric(
-        predictions.get("synthetic_fair_price_per_sqm"),
-        errors="coerce",
-    )
-    predicted = pd.to_numeric(
-        predictions.get("predicted_price_per_sqm"),
-        errors="coerce",
-    )
-    valid = truth.notna() & predicted.notna() & (truth > 0)
-    if valid.sum() == 0:
-        raise DataGateError("No rows have synthetic fair price labels for metrics.")
+    targets = {
+        "price_per_sqm": {
+            "label_column": "synthetic_fair_price_per_sqm",
+            "prediction_column": "predicted_price_per_sqm",
+            "model": "price_per_sqm_catboost_regressor.joblib",
+        },
+        "estimated_value_aed": {
+            "label_column": "synthetic_estimated_value_aed",
+            "prediction_column": "predicted_estimated_value_aed",
+            "model": "estimated_value_aed_xgb_regressor.joblib",
+        },
+        "development_potential_score": {
+            "label_column": "synthetic_development_potential_score",
+            "prediction_column": "predicted_development_potential_score",
+            "model": "development_potential_score_catboost_regressor.joblib",
+        },
+    }
 
-    y_true = truth.loc[valid]
-    y_pred = predicted.loc[valid]
-    ape = ((y_pred - y_true).abs() / y_true) * 100
-    rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
+    target_metrics: dict[str, dict[str, Any]] = {}
+    for target, spec in targets.items():
+        truth = pd.to_numeric(
+            predictions.get(spec["label_column"]),
+            errors="coerce",
+        )
+        predicted = pd.to_numeric(
+            predictions.get(spec["prediction_column"]),
+            errors="coerce",
+        )
+        valid = truth.notna() & predicted.notna() & (truth > 0)
+        if valid.sum() == 0:
+            target_metrics[target] = {
+                "model": spec["model"],
+                "label_column": spec["label_column"],
+                "prediction_column": spec["prediction_column"],
+                "metric_rows": 0,
+                "status": "missing_prediction_or_label",
+            }
+            continue
+
+        y_true = truth.loc[valid]
+        y_pred = predicted.loc[valid]
+        ape = ((y_pred - y_true).abs() / y_true) * 100
+        target_metrics[target] = {
+            "model": spec["model"],
+            "label_column": spec["label_column"],
+            "prediction_column": spec["prediction_column"],
+            "metric_rows": int(valid.sum()),
+            "mae": float(mean_absolute_error(y_true, y_pred)),
+            "rmse": float(np.sqrt(mean_squared_error(y_true, y_pred))),
+            "r2": float(r2_score(y_true, y_pred)) if valid.sum() > 1 else None,
+            "median_absolute_percentage_error_pct": float(ape.median()),
+        }
+
+    if target_metrics["price_per_sqm"].get("metric_rows", 0) == 0:
+        raise DataGateError("No rows have synthetic fair price labels for metrics.")
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "data_source": "synthetic_external_listings_raw.csv",
-        "target": "synthetic_fair_price_per_sqm",
-        "model": "price_per_sqm_catboost_regressor.joblib",
         "raw_rows": int(raw_rows),
         "cleaned_rows": int(cleaned_rows),
         "mapped_coverage": round(float(mapped_coverage), 4),
         "scored_rows": int(len(predictions)),
-        "metric_rows": int(valid.sum()),
-        "mae": float(mean_absolute_error(y_true, y_pred)),
-        "rmse": rmse,
-        "r2": float(r2_score(y_true, y_pred)) if valid.sum() > 1 else None,
-        "median_absolute_percentage_error_pct": float(ape.median()),
+        "targets": target_metrics,
     }
 
 
@@ -416,7 +449,9 @@ def run_pipeline(args: argparse.Namespace) -> pd.DataFrame:
         json.dump(metrics, file, indent=2)
 
     record_metric("scored_rows", int(len(predictions)))
-    record_metric("synthetic_model_r2", metrics["r2"])
+    for target, target_metrics in metrics["targets"].items():
+        if "r2" in target_metrics:
+            record_metric(f"synthetic_{target}_r2", target_metrics["r2"])
     record_metric(
         "top_synthetic_opportunity_score",
         _safe_float(top_opportunities["synthetic_opportunity_score"].iloc[0])
@@ -433,6 +468,10 @@ def run_pipeline(args: argparse.Namespace) -> pd.DataFrame:
         "price_per_sqm_observed",
         "synthetic_fair_price_per_sqm",
         "predicted_price_per_sqm",
+        "synthetic_estimated_value_aed",
+        "predicted_estimated_value_aed",
+        "synthetic_development_potential_score",
+        "predicted_development_potential_score",
         "price_gap_pct",
         "deal_signal",
         "synthetic_opportunity_score",

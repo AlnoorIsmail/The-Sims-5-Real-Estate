@@ -62,18 +62,22 @@ distribution without target leakage. It includes transaction-compatible
 `asset_type`, `buyer_type`, district, size, and listing-date fields, while the
 hidden fair-price label follows the starter-kit transaction formula for
 district base price, asset multiplier, monthly appreciation, and controlled
-noise.
+noise. It also includes parcel-compatible zoning, land-use, parcel-size,
+status, community, and amenity features so the synthetic gated path can run all
+three existing models.
 
 Evaluation-only columns are prefixed with `synthetic_`:
 
 - `synthetic_true_district`
 - `synthetic_fair_price_per_sqm`
+- `synthetic_estimated_value_aed`
+- `synthetic_development_potential_score`
 - `synthetic_quality_case`
 - `synthetic_price_multiplier`
 
 These fields are never model inputs. The gated scorer reports synthetic
-benchmark metrics by comparing `predicted_price_per_sqm` against
-`synthetic_fair_price_per_sqm`, not against observed listing price.
+benchmark metrics by comparing each prediction against its matching
+evaluation-only label, not against observed listing price.
 
 Synthetic gated outputs:
 
@@ -90,12 +94,12 @@ wrapper that runs the synthetic gated scorer and does not fetch live API data.
 Current optimized synthetic gated benchmark:
 
 - raw rows: `50,000`
-- cleaned rows: `47,479`
-- scored rows: `29,735`
-- mapping coverage: `89.78%`
-- R2 vs `synthetic_fair_price_per_sqm`: `0.980`
-- MAE: `525 AED/sqm`
-- median absolute percentage error: `3.27%`
+- cleaned rows: `47,582`
+- scored rows: `29,757`
+- mapping coverage: `89.61%`
+- price per sqm R2: `0.969`, MAE `655 AED/sqm`
+- estimated value R2: `0.897`, MAE `8.83M AED`
+- development potential R2: `-0.226`, MAE `10.08 pts`
 
 These are synthetic benchmark metrics only. They should not be presented as
 real market accuracy.
