@@ -1,3 +1,11 @@
+"""Generate a messy-but-model-aligned synthetic external listing feed.
+
+The hidden fair-price label follows the same district, asset-type, date, and
+appreciation structure as the starter-kit transaction data. Raw listing prices
+still include portal-style noise and quality issues so the gated pipeline has
+real cleaning work to do.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -7,7 +15,6 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
-
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT_DIR / "data" / "raw" / "synthetic_external_listings_raw.csv"
@@ -68,11 +75,11 @@ UNMAPPED_AREAS = [
 ]
 
 PROPERTY_TYPES = [
-    ("studio", 3, (28, 55), (0, 0), 1.04),
-    ("apartment", 7, (55, 240), (1, 4), 1.0),
-    ("townhouse", 2, (170, 360), (2, 5), 1.06),
-    ("villa", 2, (260, 720), (3, 7), 1.12),
-    ("penthouse", 1, (190, 520), (3, 5), 1.35),
+    ("studio", 2, (60, 80), (0, 0), "apartment", 1.0),
+    ("apartment", 7, (60, 260), (1, 4), "apartment", 1.0),
+    ("townhouse", 2, (180, 360), (2, 5), "townhouse", 1.05),
+    ("villa", 2, (250, 700), (3, 7), "villa", 1.12),
+    ("penthouse", 1, (190, 520), (3, 5), "apartment", 1.0),
 ]
 
 QUALITY_CASES = [
@@ -91,8 +98,11 @@ QUALITY_CASES = [
 ]
 
 LISTING_TYPES = [("sale", 7), ("rent", 3)]
-START_DATE = date(2025, 6, 1)
-END_DATE = date(2026, 6, 26)
+BUYER_TYPES = [("individual", 5), ("corporate", 3), ("fund", 2), ("developer", 2)]
+MODEL_START_DATE = date(2023, 1, 1)
+LISTING_START_DATE = date(2023, 1, 1)
+LISTING_END_DATE = date(2026, 5, 31)
+APPRECIATION_PER_MONTH = 0.006
 
 
 def _weighted_value(rng: random.Random, choices: list[tuple[object, int]]) -> object:
@@ -113,7 +123,19 @@ def _jitter(rng: random.Random, value: float, amount: float) -> float:
 
 
 def _listed_date(rng: random.Random) -> date:
-    return START_DATE + timedelta(days=rng.randint(0, (END_DATE - START_DATE).days))
+    return LISTING_START_DATE + timedelta(
+        days=rng.randint(0, (LISTING_END_DATE - LISTING_START_DATE).days)
+    )
+
+
+def _months_from_model_start(value: date) -> int:
+    return (value.year - MODEL_START_DATE.year) * 12 + (
+        value.month - MODEL_START_DATE.month
+    )
+
+
+def _appreciation(months_from_start: int) -> float:
+    return (1 + APPRECIATION_PER_MONTH) ** months_from_start
 
 
 def _price_multiplier(rng: random.Random, quality_case: str) -> float:
@@ -136,16 +158,26 @@ def _base_row(rng: random.Random, row_number: int) -> dict:
         latitude,
         longitude,
     ) = district
-    property_type, _weight, size_range, bedroom_range, property_multiplier = _weighted_record(
-        rng,
-        PROPERTY_TYPES,
-    )
+    (
+        property_type,
+        _weight,
+        size_range,
+        bedroom_range,
+        asset_type,
+        asset_multiplier,
+    ) = _weighted_record(rng, PROPERTY_TYPES)
     size = rng.randint(*size_range)
     bedrooms = 0 if property_type == "studio" else rng.randint(*bedroom_range)
     bathrooms = max(1, bedrooms + rng.choice([-1, 0, 0, 1]))
     listed_at = _listed_date(rng)
+    transaction_months = _months_from_model_start(listed_at)
     fair_price_per_sqm = int(
-        round(base_sale_aed_sqm * property_multiplier * _noise(rng, 0.08))
+        round(
+            base_sale_aed_sqm
+            * asset_multiplier
+            * _appreciation(transaction_months)
+            * _noise(rng, 0.04)
+        )
     )
     quality_case = _weighted_value(rng, QUALITY_CASES)
     price_multiplier = _price_multiplier(rng, quality_case)
@@ -198,8 +230,10 @@ def _base_row(rng: random.Random, row_number: int) -> dict:
         "transaction_type": transaction_type,
         "area": area,
         "property_type": property_type,
+        "asset_type": asset_type,
         "bedrooms": bedrooms,
         "bathrooms": output_bathrooms,
+        "buyer_type": _weighted_value(rng, BUYER_TYPES),
         "building_id": building_id,
         "listed_at": listed_at.isoformat(),
         "latitude": _jitter(rng, latitude, 0.018),

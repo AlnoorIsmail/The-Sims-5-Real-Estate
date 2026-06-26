@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T09:48:25.357734+00:00",
+  "generated_at": "2026-06-26T09:55:42.491582+00:00",
   "status": "passed_with_warnings",
   "gates": [
     {
@@ -25,27 +25,27 @@
     {
       "name": "non_empty",
       "status": "passed",
-      "message": "synthetic_external_listings_clean contains 47570 rows.",
+      "message": "synthetic_external_listings_clean contains 47479 rows.",
       "details": {
         "source_name": "synthetic_external_listings_clean",
-        "row_count": 47570
+        "row_count": 47479
       }
     },
     {
       "name": "min_valid_rows",
       "status": "passed",
-      "message": "47570 valid rows remain after cleaning.",
+      "message": "47479 valid rows remain after cleaning.",
       "details": {
-        "row_count": 47570,
+        "row_count": 47479,
         "min_rows": 50
       }
     },
     {
       "name": "district_mapping_coverage",
       "status": "passed",
-      "message": "District mapping coverage is 89.6%.",
+      "message": "District mapping coverage is 89.8%.",
       "details": {
-        "coverage": 0.8961109943241539,
+        "coverage": 0.8977863897723204,
         "min_coverage": 0.6
       }
     },
@@ -87,12 +87,12 @@
     "listings_source": "synthetic_external_csv",
     "listings_path": "/Users/alnoor.ismail/Documents/GitHub/Guardii/The-Sims-5-Real-Estate/data/raw/synthetic_external_listings_raw.csv",
     "synthetic_external_listings_raw_rows": 50000,
-    "synthetic_external_listings_clean_rows": 47570,
-    "valid_rows_after_cleaning": 47570,
-    "district_mapping_coverage": 0.8961,
-    "sale_compatible_scoring_rows": 29360,
-    "scored_rows": 29360,
-    "synthetic_model_r2": 0.5680140802717966,
+    "synthetic_external_listings_clean_rows": 47479,
+    "valid_rows_after_cleaning": 47479,
+    "district_mapping_coverage": 0.8978,
+    "sale_compatible_scoring_rows": 29735,
+    "scored_rows": 29735,
+    "synthetic_model_r2": 0.980197409203228,
     "top_synthetic_opportunity_score": 99.28
   }
 }

@@ -71,6 +71,22 @@ Synthetic accuracy is measured against the evaluation-only
 `synthetic_fair_price_per_sqm` column. That column must not be used as a model
 input feature.
 
+The current generator is intentionally model-aligned without leaking the target:
+it emits transaction-compatible `asset_type`, `buyer_type`, size, district, and
+listing-date fields, while keeping `synthetic_fair_price_per_sqm` as an
+evaluation-only label. Raw observed prices still include portal-style noise,
+outliers, missing values, and rent/sale messiness.
+
+Current optimized synthetic gated benchmark:
+
+- raw rows: `50,000`
+- cleaned rows: `47,479`
+- scored rows: `29,735`
+- mapping coverage: `89.78%`
+- R2 vs `synthetic_fair_price_per_sqm`: `0.980`
+- MAE: `525 AED/sqm`
+- median absolute percentage error: `3.27%`
+
 The synthetic gated pipeline writes:
 
 - `data/raw/synthetic_external_listings_raw.csv`

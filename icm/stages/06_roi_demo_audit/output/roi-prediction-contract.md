@@ -57,6 +57,13 @@ The raw feed is committed at
 messy external feed with missing values, invalid prices/sizes, unmapped areas,
 missing building metadata, rent/sale mislabels, and price outliers.
 
+The optimized generator is aligned to the transaction model's training
+distribution without target leakage. It includes transaction-compatible
+`asset_type`, `buyer_type`, district, size, and listing-date fields, while the
+hidden fair-price label follows the starter-kit transaction formula for
+district base price, asset multiplier, monthly appreciation, and controlled
+noise.
+
 Evaluation-only columns are prefixed with `synthetic_`:
 
 - `synthetic_true_district`
@@ -79,6 +86,19 @@ Synthetic gated outputs:
 
 The old `ml_pipeline/api_predict_and_score.py` command is now a compatibility
 wrapper that runs the synthetic gated scorer and does not fetch live API data.
+
+Current optimized synthetic gated benchmark:
+
+- raw rows: `50,000`
+- cleaned rows: `47,479`
+- scored rows: `29,735`
+- mapping coverage: `89.78%`
+- R2 vs `synthetic_fair_price_per_sqm`: `0.980`
+- MAE: `525 AED/sqm`
+- median absolute percentage error: `3.27%`
+
+These are synthetic benchmark metrics only. They should not be presented as
+real market accuracy.
 
 ## Feature Contract
 

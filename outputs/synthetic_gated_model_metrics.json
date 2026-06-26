@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-26T09:48:28.715889+00:00",
+  "generated_at": "2026-06-26T09:55:45.923924+00:00",
   "data_source": "synthetic_external_listings_raw.csv",
   "target": "synthetic_fair_price_per_sqm",
   "model": "price_per_sqm_catboost_regressor.joblib",
   "raw_rows": 50000,
-  "cleaned_rows": 47570,
-  "mapped_coverage": 0.8961,
-  "scored_rows": 29360,
-  "metric_rows": 29360,
-  "mae": 2742.12309858247,
-  "rmse": 3102.3990699799406,
-  "r2": 0.5680140802717966,
-  "median_absolute_percentage_error_pct": 23.325047300225844
+  "cleaned_rows": 47479,
+  "mapped_coverage": 0.8978,
+  "scored_rows": 29735,
+  "metric_rows": 29735,
+  "mae": 525.4983648654328,
+  "rmse": 704.5351191339574,
+  "r2": 0.980197409203228,
+  "median_absolute_percentage_error_pct": 3.266395656460439
 }
