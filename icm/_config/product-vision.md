@@ -30,7 +30,7 @@ signals.
 
 ## Non-goals For The Current Docs Step
 
-- Do not implement Phaser.
+- Do not implement Phaser game code unless that stage is requested.
 - Do not implement LangGraph.
 - Do not add ML model calls.
 - Do not invent the teammate's future ROI model contract.

@@ -32,6 +32,9 @@ the app code.
 - `_config/tone-safety.md`
 - `_config/roi-ml-handoff.md`
 - `_config/memory-policy.md`
+- `_config/agent-architecture.md`
+- `_config/character-archetypes.md`
+- `_config/game-master-events.md`
 
 Load only the references named by the active stage. Avoid monolithic context.
 
@@ -43,5 +46,5 @@ Load only the references named by the active stage. Avoid monolithic context.
 - Authority model: resident agents propose; game master adjudicates.
 - ROI: transparent local placeholder until the teammate ML branch defines its
   integration contract.
-- Memory: v1 live state is in memory; future persisted character memory must use
-  whitelisted tools and fixed app-owned paths.
+- Memory: local Chroma OSS with Gemini embeddings, one collection per character
+  and one game-master collection.

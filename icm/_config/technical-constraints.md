@@ -6,6 +6,9 @@
 - Keep model calls server-side in route handlers when implemented.
 - Keep the provider boundary neutral: OpenAI, Anthropic, Hugging Face, local
   models, and custom APIs should remain swappable behind the harness interface.
+- Run Chroma locally for v1 memory with `npm run chroma`.
+- Use Gemini embeddings for Chroma memory by default:
+  `GEMINI_EMBEDDING_MODEL=gemini-embedding-001`.
 
 ## Demo Target
 
@@ -16,10 +19,10 @@
 
 ## Package Policy
 
-- Do not add dependencies during documentation work.
 - When implementation starts, prefer existing platform features and installed
   packages first.
-- Add Phaser or LangGraph only when implementing the stage that needs them.
+- Phaser and Chroma are installed for the simulator and memory layers.
+- Add LangGraph only when implementing the stage that needs it.
 
 ## Repo Boundaries
 

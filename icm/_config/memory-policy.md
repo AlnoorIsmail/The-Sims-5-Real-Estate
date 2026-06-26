@@ -1,7 +1,42 @@
 # Memory Policy
 
-The LLM is not the database. The engine owns truth; memory retrieval only builds
-the prompt context for an agent decision.
+The LLM is not the database. The engine owns truth; Chroma memory retrieval only
+builds prompt context for agent decisions.
+
+## Chroma Setup
+
+- Run local Chroma OSS with `npm run chroma`.
+- Connect from server-side app code with `chromadb`.
+- Use `@chroma-core/google-gemini` and `GEMINI_API_KEY`.
+- Default embedding model: `gemini-embedding-001`.
+- Do not expose Chroma or Gemini keys to browser code.
+
+## Collections
+
+Use isolated collections:
+
+- one collection per character: `agent_{agentId}_memory`
+- one game-master collection: `gm_world_memory`
+
+Each character owns its own perceived memories. The game master owns objective
+world events, daily summaries, event-card history, and adjudication notes.
+
+## Memory Record Shape
+
+Store document text plus metadata:
+
+- `memoryType`: episodic, semantic, relationship, reflection, news, summary
+- `day`
+- `block`
+- `location`
+- `participants`
+- `tags`
+- `importance`
+- `sourceEventId`
+- `timestamp`
+
+Use metadata filters before or alongside vector search. Do not retrieve the
+whole event log.
 
 ## V1 Memory Stack
 
@@ -10,13 +45,23 @@ the prompt context for an agent decision.
 | Authoritative world state | simulation engine | Current truth: time, positions, units, money, rent, occupancy, reputation, ROI inputs |
 | Immediate context | agent runtime | Last local events, actions, and dialogue relevant to this tick |
 | Working agent state | simulation engine | Current location, visible agents, needs, mood, active goals, and constraints |
-| Episodic memory | memory store | Timestamped remembered events with actors, location, tags, importance, and short text |
-| Semantic/pinned memory | ICM/config or memory store | Stable facts, persona, durable preferences, and known routines |
-| Relationship memory | simulation engine and memory store | Agent-to-agent trust, affection, fear, resentment, obligations, and notes |
-| Reflection memory | memory store | Periodic compressed beliefs, lessons, fears, and changed goals |
+| Episodic memory | per-agent Chroma collection | Timestamped events as that agent perceived them |
+| Semantic/pinned memory | per-agent Chroma collection and ICM config | Stable facts, persona, durable preferences, and known routines |
+| Relationship memory | engine plus per-agent Chroma notes | Agent-to-agent trust, affection, fear, resentment, obligations, and subjective notes |
+| Reflection memory | per-agent Chroma collection | Periodic compressed beliefs, lessons, fears, and changed goals |
+| World memory | `gm_world_memory` | Objective daily briefs, global events, news-card outcomes, and summaries |
 
-V1 keeps these structures in memory for a run. Persisted files and vector search
-are later upgrades.
+## Subjective Writes
+
+When an event resolves:
+
+- direct participants write subjective memories
+- agents in the same map block write perceived memories
+- global game-master events write to all relevant agents and `gm_world_memory`
+- agents outside the block do not learn local events unless later told
+
+Memory is written after validation and resolution, not when an agent merely
+intends an action.
 
 ## Agent Context Bundle
 
@@ -26,24 +71,28 @@ For one agent action, assemble only scoped context:
 2. agent identity and persona
 3. current world state visible to the agent
 4. relevant relationships
-5. retrieved episodic memories
+5. Chroma-retrieved episodic memories
 6. relevant reflections
 7. recent local events
 8. available actions
 9. JSON output schema
 
-Do not dump the full event log into the prompt.
-
 ## Retrieval
 
-V1 retrieval is deterministic and boring:
+Query the actor collection with a short text query built from current state,
+goal, target, location, and recent events.
 
-- filter by actor, target, location, tags, and current goal
-- rank by recency, importance, and direct participant overlap
-- include only the smallest set that explains the current decision
+Prefer metadata filters for:
 
-Embeddings and vector search can be added after the mock and deterministic paths
-work.
+- actor or participant
+- block
+- location
+- day range
+- memory type
+- tags
+
+Rank final prompt candidates by semantic match, recency, importance, and direct
+participant overlap.
 
 ## Reflection
 
@@ -60,7 +109,7 @@ Reflection should extract:
 
 ## Runtime Loop
 
-Use this loop for agent behavior:
+Use this loop for character behavior:
 
 1. observe
 2. retrieve
@@ -73,27 +122,9 @@ Use this loop for agent behavior:
 The LLM proposes intent only. It cannot directly mutate money, jobs, reputation,
 occupancy, rent, ownership, or ROI.
 
-## Future Persistent Memory
+## Source Docs
 
-If persisted character memory is added later:
-
-- use fixed app-owned paths
-- expose only whitelisted read/write tools
-- store structured summaries, not raw unrestricted chat logs
-- keep writes auditable and scoped to the active character
-- treat in-memory state as the loaded working set and persisted files as cache
-  misses or long-term memory sources
-
-This can resemble RAG, but the purpose is scoped character continuity, not broad
-document search.
-
-## Source Patterns
-
-- AI Dungeon: layered prompt context, auto summaries, memory bank retrieval, and context limits.
-- Friends & Fables: compressed memories every few turns and selective context loading.
-- Character.AI: pinned/auto/chat memories for durable persona facts.
-- Inworld: realtime session state is ephemeral unless persisted externally.
-- Generative Agents: memory stream, retrieval, reflection, and planning.
-
-Hidden Door-style constraints and Voyager-style skill libraries are later-stage
-inspiration, not v1 requirements.
+- Chroma TypeScript setup: https://docs.trychroma.com/docs/overview/getting-started
+- Chroma local server: https://docs.trychroma.com/docs/run-chroma/client-server
+- Gemini embeddings: https://docs.trychroma.com/integrations/embedding-models/google-gemini
+- Metadata filtering: https://docs.trychroma.com/docs/querying-collections/metadata-filtering
