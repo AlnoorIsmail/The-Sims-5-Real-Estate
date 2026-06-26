@@ -4,3 +4,6 @@ scikit-learn
 xgboost
 catboost
 joblib
+onnx
+onnxmltools
+onnxruntime
