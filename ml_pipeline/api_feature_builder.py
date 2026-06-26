@@ -74,6 +74,8 @@ def _add_listing_date_features(features: pd.DataFrame) -> pd.DataFrame:
 def build_api_listing_features(
     clean_api_df: pd.DataFrame,
     districts_df: pd.DataFrame,
+    *,
+    output_path: str | Path | None = None,
 ) -> pd.DataFrame:
     """Build transaction-model-compatible features from cleaned API listings."""
 
@@ -154,5 +156,13 @@ def build_api_listing_features(
     features = features[[*ordered_columns, *remaining_columns]]
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    features.to_csv(PROCESSED_DIR / "api_listing_features.csv", index=False)
+    output = (
+        Path(output_path)
+        if output_path is not None
+        else PROCESSED_DIR / "api_listing_features.csv"
+    )
+    if not output.is_absolute():
+        output = ROOT_DIR / output
+    output.parent.mkdir(parents=True, exist_ok=True)
+    features.to_csv(output, index=False)
     return features

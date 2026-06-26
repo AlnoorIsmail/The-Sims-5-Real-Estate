@@ -64,6 +64,10 @@ def _maybe_enrich_area(raw: pd.DataFrame, areas: pd.DataFrame | None) -> pd.Data
 def clean_api_listings(
     raw: pd.DataFrame,
     areas: pd.DataFrame | None = None,
+    *,
+    source_label: str = "live_api",
+    is_api_data: bool = True,
+    output_path: str | Path | None = None,
 ) -> pd.DataFrame:
     """Clean raw external API rows without changing the starter-kit pipeline."""
 
@@ -110,17 +114,24 @@ def clean_api_listings(
     frame["missing_building_id"] = frame["building_id"].isna() | (
         frame["building_id"].astype(str).str.strip() == ""
     )
-    frame["source"] = "live_api"
-    frame["is_api_data"] = True
+    frame["source"] = source_label
+    frame["is_api_data"] = is_api_data
+    frame["is_synthetic_external_data"] = source_label.startswith("synthetic")
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(PROCESSED_DIR / "api_listings_clean.csv", index=False)
+    output = Path(output_path) if output_path is not None else PROCESSED_DIR / "api_listings_clean.csv"
+    if not output.is_absolute():
+        output = ROOT_DIR / output
+    output.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(output, index=False)
     return frame
 
 
 def map_area_to_district(
     df: pd.DataFrame,
     mapping_path: str = "ml_pipeline/area_district_mapping.csv",
+    *,
+    output_path: str | Path | None = None,
 ) -> pd.DataFrame:
     """Map messy API area values to model-compatible district names."""
 
@@ -156,5 +167,9 @@ def map_area_to_district(
     mapped = mapped.drop(columns=["area_key", "mapped_district", "confidence"])
 
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    mapped.to_csv(PROCESSED_DIR / "api_listings_clean.csv", index=False)
+    output = Path(output_path) if output_path is not None else PROCESSED_DIR / "api_listings_clean.csv"
+    if not output.is_absolute():
+        output = ROOT_DIR / output
+    output.parent.mkdir(parents=True, exist_ok=True)
+    mapped.to_csv(output, index=False)
     return mapped

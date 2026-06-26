@@ -250,6 +250,6 @@ def gate_model_feature_contract(
     _record_gate(
         "model_feature_contract",
         "passed",
-        "API rows satisfy the model feature contract.",
+        "Rows satisfy the model feature contract.",
         {"required_features": required_features},
     )

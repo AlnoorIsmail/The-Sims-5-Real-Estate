@@ -26,3 +26,8 @@ dist/
 *.log
 .vercel
 *.tsbuildinfo
+
+# Generated synthetic gated-listing intermediates
+data/processed/synthetic_external_listings_clean.csv
+data/processed/synthetic_listing_features.csv
+outputs/synthetic_listing_predictions.csv

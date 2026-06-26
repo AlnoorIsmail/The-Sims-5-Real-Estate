@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-06-26T09:48:25.357734+00:00",
+  "status": "passed_with_warnings",
+  "gates": [
+    {
+      "name": "non_empty",
+      "status": "passed",
+      "message": "synthetic_external_listings_raw contains 50000 rows.",
+      "details": {
+        "source_name": "synthetic_external_listings_raw",
+        "row_count": 50000
+      }
+    },
+    {
+      "name": "required_columns",
+      "status": "passed",
+      "message": "All required columns are present.",
+      "details": {
+        "required_columns": [
+          "price",
+          "built_up_area_sqm"
+        ]
+      }
+    },
+    {
+      "name": "non_empty",
+      "status": "passed",
+      "message": "synthetic_external_listings_clean contains 47570 rows.",
+      "details": {
+        "source_name": "synthetic_external_listings_clean",
+        "row_count": 47570
+      }
+    },
+    {
+      "name": "min_valid_rows",
+      "status": "passed",
+      "message": "47570 valid rows remain after cleaning.",
+      "details": {
+        "row_count": 47570,
+        "min_rows": 50
+      }
+    },
+    {
+      "name": "district_mapping_coverage",
+      "status": "passed",
+      "message": "District mapping coverage is 89.6%.",
+      "details": {
+        "coverage": 0.8961109943241539,
+        "min_coverage": 0.6
+      }
+    },
+    {
+      "name": "model_feature_contract",
+      "status": "passed",
+      "message": "Rows satisfy the model feature contract.",
+      "details": {
+        "required_features": [
+          "district",
+          "asset_type",
+          "size_sqm",
+          "buyer_type",
+          "area_type",
+          "profile",
+          "base_sale_aed_sqm",
+          "gross_yield_pct",
+          "infrastructure_score",
+          "established_year",
+          "transaction_year",
+          "transaction_month",
+          "transaction_quarter"
+        ]
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "message": "Skipped predicted_estimated_value_aed; Missing model features: zone, land_use, parcel_size_sqm, current_status, avg_population_estimate, avg_occupancy_rate, avg_service_demand_index, avg_mobility_score, avg_resident_experience_score, amenity_count_total, amenity_count_education, amenity_count_healthcare, amenity_count_retail, amenity_count_services, amenity_count_community, amenity_count_mobility",
+      "gate": "model_compatibility"
+    },
+    {
+      "message": "Skipped predicted_development_potential_score; Missing model features: zone, land_use, parcel_size_sqm, current_status, avg_population_estimate, avg_occupancy_rate, avg_service_demand_index, avg_mobility_score, avg_resident_experience_score, amenity_count_total, amenity_count_education, amenity_count_healthcare, amenity_count_retail, amenity_count_services, amenity_count_community, amenity_count_mobility",
+      "gate": "model_compatibility"
+    }
+  ],
+  "errors": [],
+  "metrics": {
+    "listings_source": "synthetic_external_csv",
+    "listings_path": "/Users/alnoor.ismail/Documents/GitHub/Guardii/The-Sims-5-Real-Estate/data/raw/synthetic_external_listings_raw.csv",
+    "synthetic_external_listings_raw_rows": 50000,
+    "synthetic_external_listings_clean_rows": 47570,
+    "valid_rows_after_cleaning": 47570,
+    "district_mapping_coverage": 0.8961,
+    "sale_compatible_scoring_rows": 29360,
+    "scored_rows": 29360,
+    "synthetic_model_r2": 0.5680140802717966,
+    "top_synthetic_opportunity_score": 99.28
+  }
+}

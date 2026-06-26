@@ -32,45 +32,58 @@ Training writes model artifacts to `models/` and auditable outputs to `outputs/`
 
 The final recommendation in `outputs/sample_roi_decision.json` is a transparent rule-based feasibility score that consumes model predictions plus district context. It is not a trained ROI model.
 
-## External API Gated Pipeline
+## Synthetic External Gated Pipeline
 
-The bonus UAE listings API is not used for primary model training yet. The
-starter-kit / Hugging Face CSV pipeline remains the training source, and the
-external API is treated as a messy live inference and scoring source.
+The bonus live UAE listings API is not used for this branch. The starter-kit /
+Hugging Face CSV pipeline remains the training source, and the gated listings
+path uses a deterministic synthetic external-style feed for local demo scoring.
 
-API data must pass quality gates before scoring:
+Generate the synthetic raw feed:
+
+```bash
+python ml_pipeline/generate_synthetic_external_listings.py --rows 50000 --seed 20260626
+```
+
+Run the gated scorer:
+
+```bash
+python ml_pipeline/synthetic_gated_predict_and_score.py
+```
+
+Synthetic listing rows must pass quality gates before scoring:
 
 - raw cache is non-empty
 - required listing columns are present
 - cleaned rows have valid price and built-up area
 - area values map to model-compatible districts
 - listing features satisfy the transaction model contract
-- parcel/development models are only used when the API row has compatible
+- parcel/development models are only used when a listing row has compatible
   parcel fields
 
 The transaction price model benchmarks each listing by predicting expected
-`price_per_sqm`. The pipeline compares that estimate with the observed API
+`price_per_sqm`. The pipeline compares that estimate with the observed
 `price / built_up_area_sqm` and labels the listing as `UNDERVALUED`,
 `FAIR_VALUE`, or `OVERPRICED`. A transparent opportunity score combines price
 gap, district gross yield, infrastructure score, profile, and mapping
 confidence.
 
-Cached raw data is saved under `data/raw/` and cleaned feature rows are saved
-under `data/processed/`, so a demo can reuse cached API rows when live API
-access is unavailable.
+Synthetic accuracy is measured against the evaluation-only
+`synthetic_fair_price_per_sqm` column. That column must not be used as a model
+input feature.
 
-```bash
-export UAE_DATA_API_KEY="uae_..."
-python ml_pipeline/api_predict_and_score.py
-```
+The synthetic gated pipeline writes:
 
-Use `--refresh` to force a live API fetch when cached raw rows already exist.
+- `data/raw/synthetic_external_listings_raw.csv`
+- `data/processed/synthetic_external_listings_clean.csv`
+- `data/processed/synthetic_listing_features.csv`
+- `outputs/synthetic_listing_predictions.csv`
+- `outputs/synthetic_top_opportunities.csv`
+- `outputs/synthetic_data_quality_report.json`
+- `outputs/synthetic_gated_model_metrics.json`
 
-The API pipeline writes:
-
-- `outputs/api_listing_predictions.csv`
-- `outputs/api_top_opportunities.csv`
-- `outputs/api_data_quality_report.json`
+For backwards compatibility, `python ml_pipeline/api_predict_and_score.py`
+runs the synthetic gated scorer and ignores live-API-only flags. It does not
+require `UAE_DATA_API_KEY`.
 
 ## ONNX Export
 

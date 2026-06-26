@@ -35,6 +35,51 @@ it performed better for that target.
 
 Current held-out metrics are written to `outputs/model_metrics.json`.
 
+## Synthetic Gated Listing Source
+
+The gated external-listing path is synthetic for this branch. It does not call
+the live UAE listings API and does not require `UAE_DATA_API_KEY`.
+
+Generate the deterministic raw feed with:
+
+```bash
+python ml_pipeline/generate_synthetic_external_listings.py --rows 50000 --seed 20260626
+```
+
+Run the gated listing scorer with:
+
+```bash
+python ml_pipeline/synthetic_gated_predict_and_score.py
+```
+
+The raw feed is committed at
+`data/raw/synthetic_external_listings_raw.csv`. It intentionally mimics a
+messy external feed with missing values, invalid prices/sizes, unmapped areas,
+missing building metadata, rent/sale mislabels, and price outliers.
+
+Evaluation-only columns are prefixed with `synthetic_`:
+
+- `synthetic_true_district`
+- `synthetic_fair_price_per_sqm`
+- `synthetic_quality_case`
+- `synthetic_price_multiplier`
+
+These fields are never model inputs. The gated scorer reports synthetic
+benchmark metrics by comparing `predicted_price_per_sqm` against
+`synthetic_fair_price_per_sqm`, not against observed listing price.
+
+Synthetic gated outputs:
+
+- `data/processed/synthetic_external_listings_clean.csv`
+- `data/processed/synthetic_listing_features.csv`
+- `outputs/synthetic_listing_predictions.csv`
+- `outputs/synthetic_top_opportunities.csv`
+- `outputs/synthetic_data_quality_report.json`
+- `outputs/synthetic_gated_model_metrics.json`
+
+The old `ml_pipeline/api_predict_and_score.py` command is now a compatibility
+wrapper that runs the synthetic gated scorer and does not fetch live API data.
+
 ## Feature Contract
 
 The model feature contract is internal to the ML boundary. The UI must not
