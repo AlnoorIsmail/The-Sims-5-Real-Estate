@@ -11,10 +11,10 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 pb-6 sm:px-6 lg:px-8">
         <Hero track={TRACK} />
 
-        <div className="mt-6 grid items-start gap-6 lg:h-[calc(100vh-330px)] lg:min-h-[520px] lg:grid-cols-[minmax(360px,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
+        <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(360px,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
           <RoiPredictionPanel />
 
-          <div className="min-w-0 space-y-6 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:gap-4 lg:space-y-0">
+          <div className="min-w-0 space-y-6 lg:flex lg:flex-col lg:gap-4 lg:space-y-0">
             <DemoPanel track={TRACK} />
             <SimulatorControlPanel />
           </div>

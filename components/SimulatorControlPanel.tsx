@@ -470,7 +470,7 @@ export default function SimulatorControlPanel() {
   return (
     <section
       id="simulator"
-      className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-4 shadow-[0_18px_50px_rgba(45,38,24,0.08)] lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-hidden"
+      className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-4 shadow-[0_18px_50px_rgba(45,38,24,0.08)] lg:flex lg:flex-1 lg:flex-col"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -506,7 +506,7 @@ export default function SimulatorControlPanel() {
         ))}
       </div>
 
-      <div className="mt-4 rounded-lg border border-[#ded7c9] bg-[#fdfbf7] p-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain">
+      <div className="mt-4 rounded-lg border border-[#ded7c9] bg-[#fdfbf7] p-4">
         {page === "setup" && (
           <div className="grid gap-3 sm:grid-cols-2">
             <SelectField
