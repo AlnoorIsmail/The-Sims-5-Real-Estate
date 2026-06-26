@@ -54,10 +54,10 @@ export default function Hero({ track }: { track: Track }) {
             Check a property
           </a>
           <a
-            href="#shortlist"
+            href="#simulator"
             className="rounded-md border border-[#cfc6b6] bg-white/70 px-4 py-2 text-sm font-semibold text-[#2d3834] transition hover:border-[#aab9b2]"
           >
-            View examples
+            Open simulator
           </a>
         </div>
       </div>

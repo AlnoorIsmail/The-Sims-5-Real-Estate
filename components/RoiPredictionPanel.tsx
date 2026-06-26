@@ -386,7 +386,7 @@ export default function RoiPredictionPanel() {
   return (
     <section
       id="demo"
-      className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-5 shadow-[0_18px_50px_rgba(45,38,24,0.10)]"
+      className="rounded-xl border border-[#d9d2c4] bg-[#fbfaf6] p-5 shadow-[0_18px_50px_rgba(45,38,24,0.10)] lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:overflow-hidden"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -402,7 +402,8 @@ export default function RoiPredictionPanel() {
         </span>
       </div>
 
-      <div className="mt-5 rounded-lg border border-[#ded7c9] bg-white p-4">
+      <div className="mt-5 min-h-0 flex-1 lg:overflow-y-auto lg:overscroll-contain lg:pr-2">
+      <div className="rounded-lg border border-[#ded7c9] bg-white p-4">
         <div className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <div>
@@ -570,6 +571,7 @@ export default function RoiPredictionPanel() {
           </ul>
         </div>
       ) : null}
+      </div>
     </section>
   );
 }
