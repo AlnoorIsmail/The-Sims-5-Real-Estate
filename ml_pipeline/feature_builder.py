@@ -4,6 +4,11 @@ from collections.abc import Mapping
 
 import pandas as pd
 
+from ml_pipeline.development_potential import (
+    DEVELOPMENT_ENGINEERED_FEATURE_COLUMNS,
+    add_development_potential_features,
+)
+
 
 TRANSACTION_FEATURE_COLUMNS = [
     "district",
@@ -45,6 +50,7 @@ PARCEL_FEATURE_COLUMNS = [
     "amenity_count_services",
     "amenity_count_community",
     "amenity_count_mobility",
+    *DEVELOPMENT_ENGINEERED_FEATURE_COLUMNS,
 ]
 
 TRANSACTION_TARGET = "price_per_sqm"
@@ -241,4 +247,4 @@ def build_parcel_table(data: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
             table[column] = 0
         table[column] = table[column].fillna(0)
 
-    return table
+    return add_development_potential_features(table)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T10:03:51.181250+00:00",
+  "generated_at": "2026-06-26T10:42:20.832679+00:00",
   "data_source": "synthetic_external_listings_raw.csv",
   "raw_rows": 50000,
   "cleaned_rows": 47582,
@@ -21,20 +21,20 @@
       "label_column": "synthetic_estimated_value_aed",
       "prediction_column": "predicted_estimated_value_aed",
       "metric_rows": 29757,
-      "mae": 8827341.0,
-      "rmse": 13827175.7039731,
-      "r2": 0.8970525860786438,
-      "median_absolute_percentage_error_pct": 11.295516349094331
+      "mae": 8754862.0,
+      "rmse": 13560081.280436043,
+      "r2": 0.9009913802146912,
+      "median_absolute_percentage_error_pct": 11.322072639225182
     },
     "development_potential_score": {
       "model": "development_potential_score_catboost_regressor.joblib",
       "label_column": "synthetic_development_potential_score",
       "prediction_column": "predicted_development_potential_score",
       "metric_rows": 29757,
-      "mae": 10.079995402121064,
-      "rmse": 12.535531276839428,
-      "r2": -0.22616954149253443,
-      "median_absolute_percentage_error_pct": 12.12248227070668
+      "mae": 11.372692743935305,
+      "rmse": 14.083800221929401,
+      "r2": -0.5477640186107531,
+      "median_absolute_percentage_error_pct": 13.66498479793021
     }
   }
 }

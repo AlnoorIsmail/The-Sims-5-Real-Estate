@@ -56,20 +56,29 @@
       "amenity_count_retail",
       "amenity_count_services",
       "amenity_count_community",
-      "amenity_count_mobility"
+      "amenity_count_mobility",
+      "log_parcel_size_sqm",
+      "amenity_density_per_10k_sqm",
+      "amenity_retail_share",
+      "amenity_mobility_share",
+      "amenity_community_share",
+      "service_demand_minus_mobility",
+      "service_demand_x_occupancy",
+      "infrastructure_x_mobility",
+      "yield_x_base_price",
+      "zone_family",
+      "land_use_status",
+      "recommended_use_family"
     ],
-    "mae": 9894995.0,
-    "rmse": 19320775.12308779,
-    "r2": 0.8677471876144409
+    "mae": 9732261.0,
+    "rmse": 18632158.789121564,
+    "r2": 0.877006471157074
   },
   "parcel_development_potential_score": {
     "target": "development_potential_score",
-    "model_family": "catboost",
+    "model_family": "rule_based_fallback",
     "model_params": {
-      "iterations": 300,
-      "depth": 4,
-      "learning_rate": 0.05,
-      "l2_leaf_reg": 3.0
+      "reason": "catboost held-out R2 -0.0891419203368522 was below 0.05."
     },
     "rows": 600,
     "features": [
@@ -95,10 +104,75 @@
       "amenity_count_retail",
       "amenity_count_services",
       "amenity_count_community",
-      "amenity_count_mobility"
+      "amenity_count_mobility",
+      "log_parcel_size_sqm",
+      "amenity_density_per_10k_sqm",
+      "amenity_retail_share",
+      "amenity_mobility_share",
+      "amenity_community_share",
+      "service_demand_minus_mobility",
+      "service_demand_x_occupancy",
+      "infrastructure_x_mobility",
+      "yield_x_base_price",
+      "zone_family",
+      "land_use_status",
+      "recommended_use_family"
     ],
-    "mae": 10.579782955679148,
-    "rmse": 13.55096178430046,
-    "r2": -0.04523134416695784
+    "mae": 11.665571899300975,
+    "rmse": 15.144405056354566,
+    "r2": -0.3054992224587576,
+    "ml_candidate_metrics": {
+      "target": "development_potential_score",
+      "model_family": "catboost",
+      "model_params": {
+        "iterations": 300,
+        "depth": 4,
+        "learning_rate": 0.05,
+        "l2_leaf_reg": 3.0
+      },
+      "rows": 600,
+      "features": [
+        "district",
+        "zone",
+        "land_use",
+        "parcel_size_sqm",
+        "current_status",
+        "area_type",
+        "profile",
+        "base_sale_aed_sqm",
+        "gross_yield_pct",
+        "infrastructure_score",
+        "established_year",
+        "avg_population_estimate",
+        "avg_occupancy_rate",
+        "avg_service_demand_index",
+        "avg_mobility_score",
+        "avg_resident_experience_score",
+        "amenity_count_total",
+        "amenity_count_education",
+        "amenity_count_healthcare",
+        "amenity_count_retail",
+        "amenity_count_services",
+        "amenity_count_community",
+        "amenity_count_mobility",
+        "log_parcel_size_sqm",
+        "amenity_density_per_10k_sqm",
+        "amenity_retail_share",
+        "amenity_mobility_share",
+        "amenity_community_share",
+        "service_demand_minus_mobility",
+        "service_demand_x_occupancy",
+        "infrastructure_x_mobility",
+        "yield_x_base_price",
+        "zone_family",
+        "land_use_status",
+        "recommended_use_family"
+      ],
+      "mae": 10.695548004454235,
+      "rmse": 13.832674104458498,
+      "r2": -0.0891419203368522
+    },
+    "fallback_method": "rule_based_development_potential_fallback",
+    "selection_reason": "Using transparent development-potential formula because the trained ML fit did not clear the minimum held-out R2 gate."
   }
 }

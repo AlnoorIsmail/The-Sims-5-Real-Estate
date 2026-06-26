@@ -1,0 +1,115 @@
+{
+  "generated_at": "2026-06-26T10:42:06.674315+00:00",
+  "mode": "smoke",
+  "sfs_sample_rows": 2500,
+  "sfs_validation_rows": 875,
+  "candidate_features": [
+    "area_grouped",
+    "property_type_grouped",
+    "property_sub_type_grouped",
+    "asset_type_grouped",
+    "transaction_sub_type_grouped",
+    "registration_type",
+    "is_freehold",
+    "size_sqm",
+    "log_size_sqm",
+    "size_bucket",
+    "bedrooms",
+    "bedroom_bucket",
+    "parking_count_clean",
+    "has_parking",
+    "buyer_count",
+    "seller_count",
+    "transaction_month",
+    "transaction_quarter",
+    "nearest_metro_grouped",
+    "nearest_mall_grouped",
+    "nearest_landmark_grouped",
+    "project_grouped"
+  ],
+  "mandatory_features": [
+    "area_grouped",
+    "asset_type_grouped",
+    "log_size_sqm"
+  ],
+  "selected_features": [
+    "area_grouped",
+    "asset_type_grouped",
+    "log_size_sqm",
+    "transaction_sub_type_grouped",
+    "project_grouped",
+    "nearest_landmark_grouped",
+    "size_bucket"
+  ],
+  "history": [
+    {
+      "round": 0,
+      "selected_feature": null,
+      "features": [
+        "area_grouped",
+        "asset_type_grouped",
+        "log_size_sqm"
+      ],
+      "validation_log_rmse": 0.3592606415423502,
+      "improvement": null
+    },
+    {
+      "round": 1,
+      "selected_feature": "transaction_sub_type_grouped",
+      "features": [
+        "area_grouped",
+        "asset_type_grouped",
+        "log_size_sqm",
+        "transaction_sub_type_grouped"
+      ],
+      "validation_log_rmse": 0.3357717338506583,
+      "improvement": 0.02348890769169193,
+      "weak_rounds": 0
+    },
+    {
+      "round": 2,
+      "selected_feature": "project_grouped",
+      "features": [
+        "area_grouped",
+        "asset_type_grouped",
+        "log_size_sqm",
+        "transaction_sub_type_grouped",
+        "project_grouped"
+      ],
+      "validation_log_rmse": 0.33074462094641893,
+      "improvement": 0.00502711290423935,
+      "weak_rounds": 0
+    },
+    {
+      "round": 3,
+      "selected_feature": "nearest_landmark_grouped",
+      "features": [
+        "area_grouped",
+        "asset_type_grouped",
+        "log_size_sqm",
+        "transaction_sub_type_grouped",
+        "project_grouped",
+        "nearest_landmark_grouped"
+      ],
+      "validation_log_rmse": 0.3273731826121398,
+      "improvement": 0.0033714383342791088,
+      "weak_rounds": 0
+    },
+    {
+      "round": 4,
+      "selected_feature": "size_bucket",
+      "features": [
+        "area_grouped",
+        "asset_type_grouped",
+        "log_size_sqm",
+        "transaction_sub_type_grouped",
+        "project_grouped",
+        "nearest_landmark_grouped",
+        "size_bucket"
+      ],
+      "validation_log_rmse": 0.32579104213967397,
+      "improvement": 0.0015821404724658539,
+      "weak_rounds": 0
+    }
+  ]
+}

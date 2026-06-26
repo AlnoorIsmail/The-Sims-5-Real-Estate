@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from ml_pipeline.development_potential import add_development_potential_features
 from ml_pipeline.feature_builder import (
     DISTRICT_CONTEXT_COLUMNS,
     TRANSACTION_FEATURE_COLUMNS,
@@ -138,6 +139,8 @@ def build_api_listing_features(
     ):
         if column not in features.columns:
             features[column] = "unknown"
+
+    features = add_development_potential_features(features)
 
     ordered_columns = [
         *[column for column in TRANSACTION_FEATURE_COLUMNS if column in features.columns],

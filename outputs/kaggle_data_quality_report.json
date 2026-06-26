@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-06-26T10:24:32.635121+00:00",
+  "status": "passed",
+  "source_directory": "Kaggle_Data",
+  "datasets": {
+    "transactions_2023_h1": {
+      "filename": "transactions-2023-07-02.csv",
+      "source_url": "https://www.kaggle.com/datasets/austinpowers/dubai-real-estate-transaction-first-semester-2023",
+      "license": "CC0: Public Domain",
+      "market": "Dubai",
+      "best_use": "price_per_sqm training candidate",
+      "raw_rows": 81601,
+      "normalized_rows": 81601,
+      "sales_rows": 61046,
+      "residential_rows": 77338,
+      "area_count": 258,
+      "property_sub_type_count": 37,
+      "price_per_sqm_aed_summary": {
+        "p01": 335.1505943337206,
+        "p50": 12376.782306051422,
+        "p99": 55787.69937025484
+      },
+      "transaction_type_counts": {
+        "Sales": 61046,
+        "Mortgage": 16797,
+        "Gifts": 3758
+      },
+      "usage_counts": {
+        "Residential": 77338,
+        "Commercial": 4263
+      },
+      "output_path": "data/processed/kaggle_transactions_normalized.csv",
+      "recommendation": "Best Kaggle source for real price-per-sqm training or benchmarking. Use as Dubai market data; do not label it Abu Dhabi accuracy."
+    },
+    "dubai_properties_apartments": {
+      "filename": "properties_data.csv",
+      "source_url": "https://www.kaggle.com/datasets/dataregress/dubai-properties-dataset",
+      "license": "CC0: Public Domain",
+      "market": "Dubai",
+      "best_use": "listing-style gated inference and validation",
+      "raw_rows": 1905,
+      "normalized_rows": 1905,
+      "area_count": 54,
+      "price_per_sqm_aed_summary": {
+        "p01": 4894.761190457527,
+        "p50": 12589.368908432421,
+        "p99": 42375.17900703265
+      },
+      "bedroom_counts": {
+        "2": 729,
+        "1": 639,
+        "3": 338,
+        "0": 124,
+        "4": 70,
+        "5": 5
+      },
+      "quality_counts": {
+        "Medium": 1146,
+        "Low": 544,
+        "High": 134,
+        "Ultra": 81
+      },
+      "output_path": "data/processed/kaggle_dubai_properties_normalized.csv",
+      "recommendation": "Clean listing-style validation source with amenities and coordinates. Small and apartment-only, so keep it out of headline accuracy claims."
+    },
+    "uae_real_estate_2024": {
+      "filename": "uae_real_estate_2024.xls",
+      "source_url": "https://www.kaggle.com/datasets/kanchana1990/uae-real-estate-2024-dataset",
+      "license": "ODC Attribution License (ODC-By)",
+      "market": "Dubai",
+      "best_use": "listing-style gated inference and validation",
+      "raw_rows": 5058,
+      "normalized_rows": 5058,
+      "area_count": 190,
+      "price_per_sqm_aed_summary": {
+        "p01": 2542.485576093718,
+        "p50": 16723.353751162438,
+        "p99": 72606.41067820849
+      },
+      "transaction_type_counts": {
+        "sell": 5058
+      },
+      "property_type_counts": {
+        "Residential for Sale": 5058
+      },
+      "verified_counts": {
+        "True": 3271,
+        "False": 1787
+      },
+      "output_path": "data/processed/kaggle_uae_2024_listings_normalized.csv",
+      "recommendation": "Useful real listing-style feed for gated scoring demos. It is scraped listing data, so treat observed prices as asking prices, not truth."
+    }
+  },
+  "combined_listing_rows": 6963,
+  "combined_listing_output_path": "data/processed/kaggle_external_listings_normalized.csv",
+  "overall_recommendation": {
+    "train_price_per_sqm_with": "transactions_2023_h1",
+    "score_or_validate_listings_with": [
+      "dubai_properties_apartments",
+      "uae_real_estate_2024"
+    ],
+    "not_supported_by_these_sources": [
+      "Abu Dhabi parcel estimated value accuracy",
+      "development potential score accuracy",
+      "true ROI labels"
+    ],
+    "integration_note": "These are Dubai market datasets. They can improve price and listing workflows, but the ROI contract should keep market/source metadata explicit and should not present these as Abu Dhabi ground truth."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "log_rmse": 0.2234876343890731,
+  "mae_aed_per_sqm": 2507.6922842321765,
+  "rmse_aed_per_sqm": 4558.3551520552155,
+  "r2_raw": 0.7952725998878225,
+  "median_absolute_percentage_error_pct": 10.23434576993742,
+  "p90_absolute_percentage_error_pct": 32.70466124000102,
+  "generated_at": "2026-06-26T10:42:06.674315+00:00",
+  "mode": "smoke",
+  "raw_rows": 81601,
+  "clean_rows": 58552,
+  "train_rows": 35130,
+  "validation_rows": 11711,
+  "test_rows": 11711,
+  "target": "price_per_sqm",
+  "training_target": "log_price_per_sqm",
+  "model_family": "catboost",
+  "validation_log_rmse": 0.22299124528237105,
+  "selected_features": [
+    "area_grouped",
+    "asset_type_grouped",
+    "log_size_sqm",
+    "transaction_sub_type_grouped",
+    "project_grouped",
+    "nearest_landmark_grouped",
+    "size_bucket"
+  ],
+  "categorical_features": [
+    "area_grouped",
+    "asset_type_grouped",
+    "transaction_sub_type_grouped",
+    "project_grouped",
+    "nearest_landmark_grouped",
+    "size_bucket"
+  ],
+  "rejected_or_leakage_columns": [
+    "amount_aed",
+    "price_per_sqm",
+    "transaction_id",
+    "transaction_date",
+    "source_dataset",
+    "source_url",
+    "source_license",
+    "market"
+  ],
+  "filters": {
+    "transaction_type": "Sales",
+    "usage": "Residential",
+    "size_sqm": [
+      20,
+      2000
+    ],
+    "price_per_sqm": [
+      1000,
+      100000
+    ]
+  },
+  "catboost_params": {
+    "loss_function": "RMSE",
+    "eval_metric": "RMSE",
+    "iterations": 250,
+    "learning_rate": 0.03,
+    "depth": 8,
+    "l2_leaf_reg": 8.0,
+    "random_seed": 42,
+    "thread_count": 4,
+    "verbose": false,
+    "allow_writing_files": false,
+    "early_stopping_rounds": 40
+  }
+}

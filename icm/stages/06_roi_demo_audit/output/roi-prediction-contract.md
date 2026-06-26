@@ -35,6 +35,72 @@ it performed better for that target.
 
 Current held-out metrics are written to `outputs/model_metrics.json`.
 
+## Local Kaggle Dataset Staging
+
+The user-provided Kaggle files live under `Kaggle_Data/`:
+
+- `transactions-2023-07-02.csv`
+- `properties_data.csv`
+- `uae_real_estate_2024.xls`
+
+Prepare normalized, source-labeled tables with:
+
+```bash
+python ml_pipeline/prepare_kaggle_datasets.py --input-dir Kaggle_Data
+```
+
+The preparation step writes:
+
+- `data/processed/kaggle_transactions_normalized.csv`
+- `data/processed/kaggle_dubai_properties_normalized.csv`
+- `data/processed/kaggle_uae_2024_listings_normalized.csv`
+- `data/processed/kaggle_external_listings_normalized.csv`
+- `outputs/kaggle_data_quality_report.json`
+
+Use `kaggle_transactions_normalized.csv` as the strongest real-data candidate
+for Dubai `price_per_sqm` training or benchmarking. Use
+`kaggle_external_listings_normalized.csv` for listing-style gated scoring
+experiments.
+
+Compatibility rule: these datasets describe the Dubai market. They must keep
+their `market`, `source_dataset`, `source_url`, and `source_license` metadata
+when used downstream, and they must not be presented as Abu Dhabi parcel,
+development-potential, or ROI ground truth. Listing rows provide asking prices,
+not closed-transaction labels.
+
+Kaggle price-model experimentation is isolated from the app-facing starter-kit
+artifacts. Run the HPC-ready CatBoost/SFS path with:
+
+```bash
+python ml_pipeline/train_kaggle_catboost_sfs.py --mode balanced --threads -1
+```
+
+This path trains on `log1p(price_per_sqm)` and saves a wrapper that predicts
+normal AED/sqm values to
+`models/kaggle_price_per_sqm_catboost_sfs.joblib`. Review its metrics before
+using it to replace the current transaction model.
+
+## Development Potential Fallback Rule
+
+The current sample `development_potential_score` target has weak feature signal.
+The pipeline now adds non-leaky engineered parcel/community features and trains
+the CatBoost candidate, but it does not force a weak ML model into the ROI
+contract. If held-out R2 stays below the configured gate, the compatibility
+artifact at `models/development_potential_score_catboost_regressor.joblib`
+uses a transparent rule-based fallback while keeping the same prediction field:
+
+```json
+{
+  "predicted_development_potential_score": 78.4,
+  "development_potential_method": "rule_based_development_potential_fallback"
+}
+```
+
+The fallback combines infrastructure, service demand, mobility, resident
+experience, amenity density, district yield, occupancy opportunity, parcel
+status, land use, and profile adjustments into a clamped `0-100` score. It is a
+business-rule score, not trained market accuracy.
+
 ## Synthetic Gated Listing Source
 
 The gated external-listing path is synthetic for this branch. It does not call

@@ -15,6 +15,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.append(str(ROOT_DIR))
 
 from ml_pipeline.data_loader import load_all_data
+from ml_pipeline.development_potential import RuleBasedDevelopmentPotentialRegressor
 from ml_pipeline.feature_builder import (
     DEVELOPMENT_TARGET,
     PARCEL_FEATURE_COLUMNS,
@@ -67,6 +68,7 @@ MODEL_SPECS = [
             "learning_rate": 0.05,
             "l2_leaf_reg": 3.0,
         },
+        "fallback_min_r2": 0.05,
     },
 ]
 
@@ -106,6 +108,7 @@ def _train_model(
     model_path: Path,
     model_family: str,
     model_params: dict | None = None,
+    fallback_min_r2: float | None = None,
 ) -> tuple[object, dict, list[str], pd.DataFrame]:
     X, y, selected_features = _prepare_training_data(table, feature_columns, target)
     X_train, X_test, y_train, y_test = train_test_split(
@@ -133,6 +136,44 @@ def _train_model(
         "rmse": float(np.sqrt(mean_squared_error(y_test, predictions))),
         "r2": float(r2_score(y_test, predictions)) if len(y_test) > 1 else None,
     }
+
+    if fallback_min_r2 is not None and (
+        metrics["r2"] is None or metrics["r2"] < fallback_min_r2
+    ):
+        ml_candidate_metrics = metrics.copy()
+        fallback_model = RuleBasedDevelopmentPotentialRegressor().fit(X_train, y_train)
+        fallback_predictions = fallback_model.predict(X_test)
+        fallback_metrics = {
+            "target": target,
+            "model_family": "rule_based_fallback",
+            "model_params": {
+                "reason": (
+                    f"{model_family} held-out R2 "
+                    f"{ml_candidate_metrics['r2']} was below {fallback_min_r2}."
+                ),
+            },
+            "rows": int(len(X)),
+            "features": selected_features,
+            "mae": float(mean_absolute_error(y_test, fallback_predictions)),
+            "rmse": float(np.sqrt(mean_squared_error(y_test, fallback_predictions))),
+            "r2": (
+                float(r2_score(y_test, fallback_predictions))
+                if len(y_test) > 1
+                else None
+            ),
+            "ml_candidate_metrics": ml_candidate_metrics,
+            "fallback_method": fallback_model.method_name,
+            "selection_reason": (
+                "Using transparent development-potential formula because the "
+                "trained ML fit did not clear the minimum held-out R2 gate."
+            ),
+        }
+        model = fallback_model
+        metrics = fallback_metrics
+        print(
+            f"Using rule-based fallback for {name}; "
+            f"{model_family} R2 was {ml_candidate_metrics['r2']}"
+        )
 
     joblib.dump(model, model_path)
     print(f"Saved {name} to {model_path}")
@@ -173,6 +214,7 @@ def main() -> None:
             model_path=spec["model_path"],
             model_family=spec["model_family"],
             model_params=spec["model_params"],
+            fallback_min_r2=spec.get("fallback_min_r2"),
         )
         metrics[spec["name"]] = model_metrics
         previews.append(preview)

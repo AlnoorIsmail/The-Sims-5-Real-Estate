@@ -1,0 +1,839 @@
+{
+  "generated_at": "2026-06-26T10:41:34.943052+00:00",
+  "rows": 600,
+  "target": "development_potential_score",
+  "target_summary": {
+    "count": 600.0,
+    "mean": 72.14333333333333,
+    "std": 13.862289156436246,
+    "min": 30.0,
+    "25%": 63.0,
+    "50%": 73.0,
+    "75%": 82.25,
+    "max": 100.0
+  },
+  "pearson_top": [
+    {
+      "feature": "amenity_community_share",
+      "pearson_correlation": 0.09527634726381704
+    },
+    {
+      "feature": "amenity_count_healthcare",
+      "pearson_correlation": -0.08616999375076688
+    },
+    {
+      "feature": "amenity_count_services",
+      "pearson_correlation": -0.08454622042406898
+    },
+    {
+      "feature": "amenity_count_retail",
+      "pearson_correlation": -0.0834036447151365
+    },
+    {
+      "feature": "amenity_count_total",
+      "pearson_correlation": -0.08095893499345712
+    },
+    {
+      "feature": "amenity_count_mobility",
+      "pearson_correlation": -0.07764152684308245
+    },
+    {
+      "feature": "log_parcel_size_sqm",
+      "pearson_correlation": -0.06901424844383537
+    },
+    {
+      "feature": "longitude",
+      "pearson_correlation": 0.06088354512138451
+    },
+    {
+      "feature": "parcel_size_sqm",
+      "pearson_correlation": -0.05295705920638551
+    },
+    {
+      "feature": "amenity_count_community",
+      "pearson_correlation": -0.04550817421442229
+    },
+    {
+      "feature": "amenity_count_education",
+      "pearson_correlation": -0.04337807642313869
+    },
+    {
+      "feature": "avg_population_estimate",
+      "pearson_correlation": -0.04183575277608481
+    },
+    {
+      "feature": "estimated_value_aed",
+      "pearson_correlation": -0.036619521560736036
+    },
+    {
+      "feature": "gross_yield_pct",
+      "pearson_correlation": 0.030769008984459927
+    },
+    {
+      "feature": "amenity_mobility_share",
+      "pearson_correlation": -0.029429294040613348
+    },
+    {
+      "feature": "infrastructure_score",
+      "pearson_correlation": -0.025775521247796973
+    },
+    {
+      "feature": "avg_mobility_score",
+      "pearson_correlation": -0.024543213721130802
+    },
+    {
+      "feature": "latitude",
+      "pearson_correlation": -0.023653023387509207
+    },
+    {
+      "feature": "base_sale_aed_sqm",
+      "pearson_correlation": -0.023371215518982733
+    },
+    {
+      "feature": "yield_x_base_price",
+      "pearson_correlation": -0.02196984675806206
+    },
+    {
+      "feature": "infrastructure_x_mobility",
+      "pearson_correlation": -0.021698910684537918
+    },
+    {
+      "feature": "service_demand_minus_mobility",
+      "pearson_correlation": 0.019342286455021798
+    },
+    {
+      "feature": "avg_service_demand_index",
+      "pearson_correlation": 0.013376489235147213
+    },
+    {
+      "feature": "amenity_retail_share",
+      "pearson_correlation": 0.01290921413265109
+    },
+    {
+      "feature": "avg_occupancy_rate",
+      "pearson_correlation": -0.012674308528971796
+    },
+    {
+      "feature": "established_year",
+      "pearson_correlation": 0.009105208106411978
+    },
+    {
+      "feature": "service_demand_x_occupancy",
+      "pearson_correlation": 0.008775539463396218
+    },
+    {
+      "feature": "avg_resident_experience_score",
+      "pearson_correlation": -0.005067446061374836
+    },
+    {
+      "feature": "amenity_density_per_10k_sqm",
+      "pearson_correlation": 0.0011704271376245252
+    }
+  ],
+  "spearman_top": [
+    {
+      "feature": "amenity_count_mobility",
+      "spearman_correlation": -0.08884352141493507
+    },
+    {
+      "feature": "amenity_count_healthcare",
+      "spearman_correlation": -0.08770757627782426
+    },
+    {
+      "feature": "amenity_count_services",
+      "spearman_correlation": -0.0789023987823638
+    },
+    {
+      "feature": "parcel_size_sqm",
+      "spearman_correlation": -0.07884349135518046
+    },
+    {
+      "feature": "log_parcel_size_sqm",
+      "spearman_correlation": -0.07884349135518046
+    },
+    {
+      "feature": "amenity_community_share",
+      "spearman_correlation": 0.07869008947616891
+    },
+    {
+      "feature": "estimated_value_aed",
+      "spearman_correlation": -0.07470923605443054
+    },
+    {
+      "feature": "amenity_count_retail",
+      "spearman_correlation": -0.06955359531372036
+    },
+    {
+      "feature": "amenity_count_total",
+      "spearman_correlation": -0.0650372925453908
+    },
+    {
+      "feature": "amenity_count_education",
+      "spearman_correlation": -0.05972795591109609
+    },
+    {
+      "feature": "longitude",
+      "spearman_correlation": 0.05243876332552451
+    },
+    {
+      "feature": "avg_population_estimate",
+      "spearman_correlation": -0.041957521210232836
+    },
+    {
+      "feature": "avg_mobility_score",
+      "spearman_correlation": -0.04076980360644762
+    },
+    {
+      "feature": "infrastructure_x_mobility",
+      "spearman_correlation": -0.040409876532954934
+    },
+    {
+      "feature": "latitude",
+      "spearman_correlation": -0.037806328564028095
+    },
+    {
+      "feature": "amenity_mobility_share",
+      "spearman_correlation": -0.03656120290976255
+    },
+    {
+      "feature": "infrastructure_score",
+      "spearman_correlation": -0.036233658590731015
+    },
+    {
+      "feature": "service_demand_minus_mobility",
+      "spearman_correlation": 0.02922798443676202
+    },
+    {
+      "feature": "gross_yield_pct",
+      "spearman_correlation": 0.028271330405842014
+    },
+    {
+      "feature": "amenity_count_community",
+      "spearman_correlation": -0.02686115201431716
+    },
+    {
+      "feature": "amenity_density_per_10k_sqm",
+      "spearman_correlation": -0.024025489965194137
+    },
+    {
+      "feature": "yield_x_base_price",
+      "spearman_correlation": -0.022375905152106763
+    },
+    {
+      "feature": "established_year",
+      "spearman_correlation": 0.020594356168589907
+    },
+    {
+      "feature": "base_sale_aed_sqm",
+      "spearman_correlation": -0.020275962307253245
+    },
+    {
+      "feature": "avg_resident_experience_score",
+      "spearman_correlation": -0.012319073114399942
+    },
+    {
+      "feature": "avg_occupancy_rate",
+      "spearman_correlation": -0.009591277505492811
+    },
+    {
+      "feature": "avg_service_demand_index",
+      "spearman_correlation": 0.009068395311995003
+    },
+    {
+      "feature": "service_demand_x_occupancy",
+      "spearman_correlation": 0.005161426581035534
+    },
+    {
+      "feature": "amenity_retail_share",
+      "spearman_correlation": -0.0015021633628887344
+    }
+  ],
+  "mutual_information_top": [
+    {
+      "feature": "parcel_size_sqm",
+      "mutual_information": 0.05019199901181093
+    },
+    {
+      "feature": "log_parcel_size_sqm",
+      "mutual_information": 0.042418893407237146
+    },
+    {
+      "feature": "estimated_value_aed",
+      "mutual_information": 0.021551862212779493
+    },
+    {
+      "feature": "longitude",
+      "mutual_information": 0.020073275161527793
+    },
+    {
+      "feature": "amenity_mobility_share",
+      "mutual_information": 0.007137036887371551
+    },
+    {
+      "feature": "amenity_density_per_10k_sqm",
+      "mutual_information": 0.004582167208031507
+    },
+    {
+      "feature": "avg_population_estimate",
+      "mutual_information": 0.001776429003239155
+    },
+    {
+      "feature": "yield_x_base_price",
+      "mutual_information": 0.0006469207901083074
+    },
+    {
+      "feature": "established_year",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_mobility",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "infrastructure_x_mobility",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "service_demand_x_occupancy",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "service_demand_minus_mobility",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_community_share",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "base_sale_aed_sqm",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_retail_share",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "gross_yield_pct",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "latitude",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_community",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "avg_occupancy_rate",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_services",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_retail",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_healthcare",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "infrastructure_score",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_total",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "avg_resident_experience_score",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "avg_mobility_score",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "avg_service_demand_index",
+      "mutual_information": 0.0
+    },
+    {
+      "feature": "amenity_count_education",
+      "mutual_information": 0.0
+    }
+  ],
+  "categorical_eta2_top": [
+    {
+      "feature": "parcel_id",
+      "eta_squared": 0.9999999999999984,
+      "unique_values": 600,
+      "top_groups_by_mean": [
+        {
+          "value": "PRC-0280",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0167",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0224",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0317",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0460",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0145",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0116",
+          "count": 1,
+          "mean": 100.0
+        },
+        {
+          "value": "PRC-0489",
+          "count": 1,
+          "mean": 100.0
+        }
+      ]
+    },
+    {
+      "feature": "zone",
+      "eta_squared": 0.04384811181474182,
+      "unique_values": 30,
+      "top_groups_by_mean": [
+        {
+          "value": "Z-HOS-03",
+          "count": 12,
+          "mean": 81.0
+        },
+        {
+          "value": "Z-CMU-02",
+          "count": 11,
+          "mean": 77.18181818181819
+        },
+        {
+          "value": "Z-COM-01",
+          "count": 25,
+          "mean": 76.0
+        },
+        {
+          "value": "Z-IND-03",
+          "count": 12,
+          "mean": 74.66666666666667
+        },
+        {
+          "value": "Z-MIX-04",
+          "count": 27,
+          "mean": 74.18518518518519
+        },
+        {
+          "value": "Z-IND-02",
+          "count": 16,
+          "mean": 74.0625
+        },
+        {
+          "value": "Z-IND-05",
+          "count": 10,
+          "mean": 74.0
+        },
+        {
+          "value": "Z-CMU-05",
+          "count": 15,
+          "mean": 73.93333333333334
+        }
+      ]
+    },
+    {
+      "feature": "recommended_use",
+      "eta_squared": 0.03128771535820442,
+      "unique_values": 27,
+      "top_groups_by_mean": [
+        {
+          "value": "ev_assembly_facility",
+          "count": 11,
+          "mean": 76.54545454545455
+        },
+        {
+          "value": "sustainable_residential",
+          "count": 34,
+          "mean": 76.29411764705883
+        },
+        {
+          "value": "urban_boutique_hotel",
+          "count": 32,
+          "mean": 76.28125
+        },
+        {
+          "value": "coworking_offices",
+          "count": 17,
+          "mean": 75.58823529411765
+        },
+        {
+          "value": "warehousing_hub",
+          "count": 14,
+          "mean": 75.0
+        },
+        {
+          "value": "affordable_housing",
+          "count": 20,
+          "mean": 74.5
+        },
+        {
+          "value": "entertainment_retail",
+          "count": 20,
+          "mean": 74.2
+        },
+        {
+          "value": "mid_rise_residential",
+          "count": 31,
+          "mean": 73.70967741935483
+        }
+      ]
+    },
+    {
+      "feature": "district",
+      "eta_squared": 0.02838986318180128,
+      "unique_values": 20,
+      "top_groups_by_mean": [
+        {
+          "value": "Al Raha Beach",
+          "count": 20,
+          "mean": 76.55
+        },
+        {
+          "value": "Al Bateen",
+          "count": 24,
+          "mean": 76.54166666666667
+        },
+        {
+          "value": "Al Reef",
+          "count": 40,
+          "mean": 75.675
+        },
+        {
+          "value": "Al Ghadeer",
+          "count": 27,
+          "mean": 74.96296296296296
+        },
+        {
+          "value": "Corniche",
+          "count": 28,
+          "mean": 74.67857142857143
+        },
+        {
+          "value": "Al Shamkha",
+          "count": 27,
+          "mean": 74.25925925925925
+        },
+        {
+          "value": "Al Reem Island",
+          "count": 22,
+          "mean": 72.5909090909091
+        },
+        {
+          "value": "Khalifa City",
+          "count": 29,
+          "mean": 72.24137931034483
+        }
+      ]
+    },
+    {
+      "feature": "land_use_status",
+      "eta_squared": 0.02796549983287762,
+      "unique_values": 24,
+      "top_groups_by_mean": [
+        {
+          "value": "residential__reserved",
+          "count": 12,
+          "mean": 78.66666666666667
+        },
+        {
+          "value": "industrial__developed",
+          "count": 13,
+          "mean": 76.84615384615384
+        },
+        {
+          "value": "industrial__reserved",
+          "count": 6,
+          "mean": 74.83333333333333
+        },
+        {
+          "value": "mixed_use__vacant",
+          "count": 38,
+          "mean": 74.73684210526316
+        },
+        {
+          "value": "commercial__developed",
+          "count": 38,
+          "mean": 74.71052631578948
+        },
+        {
+          "value": "industrial__under_development",
+          "count": 16,
+          "mean": 74.625
+        },
+        {
+          "value": "community__under_development",
+          "count": 15,
+          "mean": 74.06666666666666
+        },
+        {
+          "value": "hospitality__under_development",
+          "count": 20,
+          "mean": 73.55
+        }
+      ]
+    },
+    {
+      "feature": "profile",
+      "eta_squared": 0.016595090526404146,
+      "unique_values": 11,
+      "top_groups_by_mean": [
+        {
+          "value": "high",
+          "count": 20,
+          "mean": 76.55
+        },
+        {
+          "value": "affordable",
+          "count": 94,
+          "mean": 75.06382978723404
+        },
+        {
+          "value": "established",
+          "count": 60,
+          "mean": 73.16666666666667
+        },
+        {
+          "value": "leisure",
+          "count": 22,
+          "mean": 72.18181818181819
+        },
+        {
+          "value": "emerging",
+          "count": 36,
+          "mean": 71.80555555555556
+        },
+        {
+          "value": "mid_high",
+          "count": 63,
+          "mean": 71.77777777777777
+        },
+        {
+          "value": "premium",
+          "count": 84,
+          "mean": 71.69047619047619
+        },
+        {
+          "value": "mid_affordable",
+          "count": 41,
+          "mean": 71.51219512195122
+        }
+      ]
+    },
+    {
+      "feature": "area_type",
+      "eta_squared": 0.011285552923980766,
+      "unique_values": 6,
+      "top_groups_by_mean": [
+        {
+          "value": "waterfront",
+          "count": 44,
+          "mean": 76.54545454545455
+        },
+        {
+          "value": "border",
+          "count": 27,
+          "mean": 74.96296296296296
+        },
+        {
+          "value": "coastal",
+          "count": 33,
+          "mean": 71.96969696969697
+        },
+        {
+          "value": "mainland",
+          "count": 263,
+          "mean": 71.95437262357414
+        },
+        {
+          "value": "central",
+          "count": 129,
+          "mean": 71.51162790697674
+        },
+        {
+          "value": "island",
+          "count": 104,
+          "mean": 70.86538461538461
+        }
+      ]
+    },
+    {
+      "feature": "recommended_use_family",
+      "eta_squared": 0.006312848759725665,
+      "unique_values": 16,
+      "top_groups_by_mean": [
+        {
+          "value": "industrial",
+          "count": 11,
+          "mean": 76.54545454545455
+        },
+        {
+          "value": "marina",
+          "count": 23,
+          "mean": 73.1304347826087
+        },
+        {
+          "value": "cleantech",
+          "count": 17,
+          "mean": 72.94117647058823
+        },
+        {
+          "value": "residential",
+          "count": 189,
+          "mean": 72.70370370370371
+        },
+        {
+          "value": "retail",
+          "count": 42,
+          "mean": 72.42857142857143
+        },
+        {
+          "value": "premium",
+          "count": 18,
+          "mean": 72.16666666666667
+        },
+        {
+          "value": "office",
+          "count": 62,
+          "mean": 72.16129032258064
+        },
+        {
+          "value": "hospitality",
+          "count": 82,
+          "mean": 72.15853658536585
+        }
+      ]
+    },
+    {
+      "feature": "current_status",
+      "eta_squared": 0.0020364128276426255,
+      "unique_values": 4,
+      "top_groups_by_mean": [
+        {
+          "value": "developed",
+          "count": 203,
+          "mean": 72.91625615763547
+        },
+        {
+          "value": "reserved",
+          "count": 42,
+          "mean": 72.5
+        },
+        {
+          "value": "under_development",
+          "count": 150,
+          "mean": 71.96666666666667
+        },
+        {
+          "value": "vacant",
+          "count": 205,
+          "mean": 71.43414634146342
+        }
+      ]
+    },
+    {
+      "feature": "land_use",
+      "eta_squared": 0.0019672386157796027,
+      "unique_values": 6,
+      "top_groups_by_mean": [
+        {
+          "value": "industrial",
+          "count": 61,
+          "mean": 73.1639344262295
+        },
+        {
+          "value": "residential",
+          "count": 175,
+          "mean": 72.52
+        },
+        {
+          "value": "commercial",
+          "count": 104,
+          "mean": 72.26923076923077
+        },
+        {
+          "value": "hospitality",
+          "count": 82,
+          "mean": 72.15853658536585
+        },
+        {
+          "value": "mixed_use",
+          "count": 117,
+          "mean": 71.5982905982906
+        },
+        {
+          "value": "community",
+          "count": 61,
+          "mean": 70.85245901639344
+        }
+      ]
+    },
+    {
+      "feature": "zone_family",
+      "eta_squared": 0.0019672386157796027,
+      "unique_values": 6,
+      "top_groups_by_mean": [
+        {
+          "value": "ind",
+          "count": 61,
+          "mean": 73.1639344262295
+        },
+        {
+          "value": "res",
+          "count": 175,
+          "mean": 72.52
+        },
+        {
+          "value": "com",
+          "count": 104,
+          "mean": 72.26923076923077
+        },
+        {
+          "value": "hos",
+          "count": 82,
+          "mean": 72.15853658536585
+        },
+        {
+          "value": "mix",
+          "count": 117,
+          "mean": 71.5982905982906
+        },
+        {
+          "value": "cmu",
+          "count": 61,
+          "mean": 70.85245901639344
+        }
+      ]
+    }
+  ],
+  "note": "Low correlation or mutual information means feature engineering may not recover an ML signal from the current target. In that case the rule-based fallback is the safer model-facing output."
+}

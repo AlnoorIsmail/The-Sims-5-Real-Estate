@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T10:03:47.175195+00:00",
+  "generated_at": "2026-06-26T10:42:16.351631+00:00",
   "status": "passed",
   "gates": [
     {
@@ -84,8 +84,8 @@
     "sale_compatible_scoring_rows": 29757,
     "scored_rows": 29757,
     "synthetic_price_per_sqm_r2": 0.9687738562618932,
-    "synthetic_estimated_value_aed_r2": 0.8970525860786438,
-    "synthetic_development_potential_score_r2": -0.22616954149253443,
+    "synthetic_estimated_value_aed_r2": 0.9009913802146912,
+    "synthetic_development_potential_score_r2": -0.5477640186107531,
     "top_synthetic_opportunity_score": 100.0
   }
 }

@@ -32,6 +32,81 @@ Training writes model artifacts to `models/` and auditable outputs to `outputs/`
 
 The final recommendation in `outputs/sample_roi_decision.json` is a transparent rule-based feasibility score that consumes model predictions plus district context. It is not a trained ROI model.
 
+## Kaggle Dataset Preparation
+
+Local Kaggle uploads can be staged under `Kaggle_Data/`:
+
+- `transactions-2023-07-02.csv`
+- `properties_data.csv`
+- `uae_real_estate_2024.xls`
+
+The `uae_real_estate_2024.xls` file is CSV text despite the extension, so it is
+read with pandas CSV parsing.
+
+Normalize and profile the Kaggle sources with:
+
+```bash
+python ml_pipeline/prepare_kaggle_datasets.py --input-dir Kaggle_Data
+```
+
+This writes:
+
+- `data/processed/kaggle_transactions_normalized.csv`
+- `data/processed/kaggle_dubai_properties_normalized.csv`
+- `data/processed/kaggle_uae_2024_listings_normalized.csv`
+- `data/processed/kaggle_external_listings_normalized.csv`
+- `outputs/kaggle_data_quality_report.json`
+
+Recommended use:
+
+- use `kaggle_transactions_normalized.csv` as the real Dubai transaction
+  candidate for price-per-sqm training or benchmarking
+- use `kaggle_external_listings_normalized.csv` for listing-style gated scoring
+  experiments and market browsing
+- do not use these files to claim Abu Dhabi parcel value, development potential,
+  or true ROI accuracy
+
+These datasets are Dubai market data. Keep source, market, and license columns
+visible in downstream work, and do not present listing asking prices as closed
+transaction truth.
+
+Train the separate Kaggle Dubai price-per-sqm CatBoost/SFS model with:
+
+```bash
+python ml_pipeline/train_kaggle_catboost_sfs.py --mode smoke --threads 4
+python ml_pipeline/train_kaggle_catboost_sfs.py --mode balanced --threads -1
+```
+
+The model trains on `log1p(price_per_sqm)` for stability, but the saved wrapper
+predicts normal AED/sqm values. This path writes separate review artifacts and
+does not overwrite the app-facing starter-kit model:
+
+- `models/kaggle_price_per_sqm_catboost_sfs.joblib`
+- `outputs/kaggle_price_model_table.csv`
+- `outputs/kaggle_price_model_metrics.json`
+- `outputs/kaggle_price_model_feature_selection.json`
+- `outputs/kaggle_price_model_test_predictions.csv`
+
+## Development Potential Fallback
+
+The `development_potential_score` target is weak in the current sample parcel
+data. The training pipeline now adds non-leaky engineered parcel/community
+features, then tries CatBoost as before. If held-out R2 is below the configured
+gate, the saved compatibility artifact uses a transparent rule-based fallback
+instead of a weak ML fit.
+
+Inspect feature signal with:
+
+```bash
+python ml_pipeline/analyze_development_potential_features.py
+```
+
+The report is written to
+`outputs/development_potential_feature_report.json`. When the fallback is active,
+`outputs/model_metrics.json` records the rejected ML candidate metrics and
+`outputs/sample_roi_decision.json` includes
+`development_potential_method`.
+
 ## Synthetic External Gated Pipeline
 
 The bonus live UAE listings API is not used for this branch. The starter-kit /

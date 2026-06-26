@@ -128,6 +128,11 @@ def main() -> None:
     predicted_development_potential_score = float(
         potential_model.predict(_model_input(selected_parcel, potential_features))[0]
     )
+    development_potential_method = getattr(
+        potential_model,
+        "method_name",
+        "ml_model",
+    )
 
     acquisition_cost_aed = predicted_estimated_value_aed * 0.70
     development_cost_aed = predicted_estimated_value_aed * 0.20
@@ -142,6 +147,12 @@ def main() -> None:
         acquisition_cost_aed=acquisition_cost_aed,
         development_cost_aed=development_cost_aed,
     )
+    decision["development_potential_method"] = development_potential_method
+    if development_potential_method != "ml_model":
+        decision["warnings"].append(
+            "Development potential uses a transparent rule-based fallback because "
+            "the trained ML fit was weak."
+        )
 
     decision.update(
         {

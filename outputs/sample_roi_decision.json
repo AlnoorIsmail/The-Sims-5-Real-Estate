@@ -1,25 +1,27 @@
 {
   "recommendation": "CONSIDER",
-  "success_score": 74.51,
+  "success_score": 74.21,
   "predicted_price_per_sqm": 7171.61,
-  "predicted_estimated_value_aed": 25756704.0,
-  "predicted_development_potential_score": 73.56,
+  "predicted_estimated_value_aed": 25102292.0,
+  "predicted_development_potential_score": 70.64,
   "district_profile": "mid",
   "district_gross_yield_pct": 8.0,
   "district_infrastructure_score": 67.0,
-  "total_cost_aed": 23181033.6,
-  "margin_aed": 2575670.4,
+  "total_cost_aed": 22592062.8,
+  "margin_aed": 2510229.2,
   "margin_pct": 11.11,
-  "reason": "CONSIDER: score 74.5/100 with 11.1% margin, 8.0% district yield, 73.6/100 development potential, and 67.0/100 infrastructure.",
+  "reason": "CONSIDER: score 74.2/100 with 11.1% margin, 8.0% district yield, 70.6/100 development potential, and 67.0/100 infrastructure.",
   "warnings": [
-    "Final recommendation uses transparent rule-based ROI logic, not a trained ROI model."
+    "Final recommendation uses transparent rule-based ROI logic, not a trained ROI model.",
+    "Development potential uses a transparent rule-based fallback because the trained ML fit was weak."
   ],
+  "development_potential_method": "rule_based_development_potential_fallback",
   "district": "Al Bahia",
   "parcel_id": "PRC-0280",
   "land_use": "community",
   "current_status": "under_development",
-  "acquisition_cost_aed": 18029692.8,
-  "development_cost_aed": 5151340.8,
-  "generated_at": "2026-06-26T09:48:45.353136+00:00",
+  "acquisition_cost_aed": 17571604.4,
+  "development_cost_aed": 5020458.4,
+  "generated_at": "2026-06-26T10:41:59.142115+00:00",
   "data_source": "Hugging Face starter-kit CSVs or matching local data/ CSVs"
 }
