@@ -1,9 +1,9 @@
 import TrackBadge, { type Track } from "./TrackBadge";
 
-// ── Put your project's identity here ────────────────────────────────
-const PROJECT_NAME = "Your Project Name";
+// Project identity.
+const PROJECT_NAME = "The Sims 5 Real Estate";
 const PROJECT_PITCH =
-  "One sentence on what your prototype does and for whom. Edit this in components/Hero.tsx.";
+  "An AI-assisted real estate investment simulator that scores Abu Dhabi districts and parcels using market, land, community, and amenity signals.";
 
 const SUBMIT_URL =
   "https://github.com/abu-dhabi-ai-proptech-challenge/submissions/issues/new?template=project-submission.yml";

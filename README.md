@@ -1,95 +1,104 @@
-# Abu Dhabi AI PropTech Challenge — Project Template
+# The Sims 5 Real Estate
 
-**Building the Intelligence Layer for Land, Investment and Communities**
+An AI-assisted real estate investment simulator that scores Abu Dhabi districts and parcels using market, land, community, and amenity signals.
 
-A clean Next.js + TypeScript + Tailwind starter for challenge teams: a generic AI prototype dashboard with a hero, track badge, sample data display, and a demo panel wired for AI output. Replace the mock engine with your model and you have a demo.
+This prototype is built for the Abu Dhabi AI PropTech Challenge, Investment Intelligence track. It uses the Hugging Face / starter-kit dataset as the main data source, trains three row-level regressors, and turns their predictions into a transparent rule-based investment recommendation.
 
-**No paid APIs are used by default** — the "Run Prototype" button calls a local mock so the template works the moment you clone it.
+No bonus live API is used. `districts.csv` is used as district context only because it has 20 rows, not as a standalone training set.
 
-**Cursor-ready:** the template ships with event rules in `.cursor/rules/event.mdc` — open it in [Cursor](https://cursor.com) and the AI already knows the event, the tracks and the data. There's a ⚡ *Best Use of Cursor* award.
+## What It Does
 
-## Quick start
+- Loads starter-kit CSVs from `data/` or Hugging Face.
+- Trains a transaction `price_per_sqm` CatBoost model because it slightly improved the same-split XGBoost baseline.
+- Trains a parcel `estimated_value_aed` XGBoost model.
+- Trains a parcel `development_potential_score` CatBoost model because it performed better than the same-split XGBoost baseline for that target.
+- Uses district yield, infrastructure, predicted value, predicted price, and development potential in a transparent ROI calculator.
+- Displays the prepared recommendation through a local Next.js dashboard.
+
+The final `BUY`, `CONSIDER`, or `DO NOT BUY` result is rule-based business logic. It is not a trained ROI model.
+
+## Quick Start
 
 ```bash
-# 1. Get the code (pick one)
-#    a) Click "Use this template" on GitHub, then clone your new repo
-#    b) Or clone directly:
-git clone https://github.com/abu-dhabi-ai-proptech-challenge/project-template.git my-project
-cd my-project
-
-# 2. Install and run
+pip install -r requirements.txt
+python ml_pipeline/train_models.py
+python ml_pipeline/predict_and_score.py
 npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>. You should see the dashboard with sample parcel data and a working (mocked) Run Prototype flow.
+Open <http://localhost:3000> and click **Fetch recommendation**.
 
-## Customize it
+## Verification
 
-1. **Set your track** — edit the `track` value in `app/page.tsx` (`land` | `investment` | `communities` | `decision`). The badge and accent color follow.
-2. **Name your project** — title and description in `components/Hero.tsx` and `app/layout.tsx`.
-3. **Bring your data** — `lib/sampleData.ts` ships with parcel rows from the starter kit. Replace with whatever your prototype consumes.
-4. **Connect your AI** — `components/DemoPanel.tsx` contains `runPrototype()`, a mock engine with clearly marked hooks for:
-   - OpenAI
-   - Anthropic (Claude)
-   - Hugging Face Inference
-   - Local models (Ollama / llama.cpp)
-   - Your own API
-5. **Keep keys out of git** — copy `.env.example` to `.env.local` and put keys there. For real key security, move model calls into a [route handler](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) (`app/api/run/route.ts`) so keys stay server-side.
-
-## Project structure
-
+```bash
+python ml_pipeline/train_models.py
+python ml_pipeline/predict_and_score.py
+npm run build
 ```
+
+The Python scripts write:
+
+- `models/price_per_sqm_catboost_regressor.joblib`
+- `models/estimated_value_aed_xgb_regressor.joblib`
+- `models/development_potential_score_catboost_regressor.joblib`
+- `outputs/model_metrics.json`
+- `outputs/transaction_model_table.csv`
+- `outputs/parcel_model_table.csv`
+- `outputs/sample_predictions.csv`
+- `outputs/sample_roi_decision.json`
+
+## Data
+
+Required CSVs:
+
+- `districts.csv`
+- `sample_transactions.csv`
+- `sample_parcels.csv`
+- `sample_communities.csv`
+- `osm_amenities.csv`
+
+The loader prefers local files in `data/`. If a file is missing locally, it loads from:
+
+```text
+https://huggingface.co/datasets/eVoost/abu-dhabi-ai-proptech-challenge/resolve/main/
+```
+
+## Project Structure
+
+```text
 app/
-  layout.tsx        Root layout + metadata
-  page.tsx          The dashboard page — set your track here
-  globals.css       Tailwind + base styles
+  page.tsx
+  api/
+    recommend/
+      route.ts
 components/
-  Hero.tsx          Event-branded header — put your project name here
-  TrackBadge.tsx    Colored badge for your chosen track
-  DemoPanel.tsx     Input → "Run Prototype" → AI output. Connect your model here.
+  Hero.tsx
+  DemoPanel.tsx
+  TrackBadge.tsx
 lib/
-  sampleData.ts     Typed sample data + the mock inference engine
-docs/
-  architecture.md   How the pieces fit, and patterns for adding an API layer
-  demo-script.md    A 3-minute demo script skeleton to fill in
+  sampleData.ts
+ml_pipeline/
+  data_loader.py
+  feature_builder.py
+  preprocessing.py
+  train_models.py
+  predict_and_score.py
+  roi_logic.py
+  README.md
+data/
+models/
+outputs/
+requirements.txt
 ```
 
-## Suggested structure as you grow
+## Notes And Limitations
 
-```
-app/api/run/route.ts    Server-side model calls (keeps keys off the client)
-lib/engine.ts           Your actual scoring/matching/reasoning logic
-lib/types.ts            Shared types as data outgrows sampleData.ts
-components/...          One component per panel — keep page.tsx thin
-```
-
-## Example ideas per track
-
-| Track | Ideas |
-|---|---|
-| 🗺️ **Land Intelligence** | Parcel scoring with explained rankings · natural-language land search · "what should be built here" recommender |
-| 💼 **Investment Intelligence** | Investor–asset matching with fit scores · deal memo generator · district momentum analyzer |
-| 🏙️ **Future Communities** | Service demand forecaster · resident experience explainer · community-fit matching |
-| 🧭 **Decision Intelligence** | Cross-dataset Q&A copilot with sources · automated morning briefing · scenario simulator |
-
-Sample datasets for all four live in the [starter kit](https://github.com/abu-dhabi-ai-proptech-challenge/starter-kit/tree/main/data).
-
-## How to submit
-
-1. Push your project to your own GitHub repo (this template's "Use this template" flow does that for you).
-2. Deploy if you can (`vercel deploy` works out of the box) or record a 2–3 minute walkthrough.
-3. Before the deadline, open an Issue in the [`submissions`](https://github.com/abu-dhabi-ai-proptech-challenge/submissions) repo using the **Project Submission** form.
-
-Full guide: [submissions repo](https://github.com/abu-dhabi-ai-proptech-challenge/submissions).
-
-## Links
-
-- 🌐 Website: https://challenge.evoost.ai
-- 💬 Discord: https://discord.gg/jy3QDxQ3jK
-- 🐙 GitHub Org: https://github.com/abu-dhabi-ai-proptech-challenge
-- 📦 Starter kit: https://github.com/abu-dhabi-ai-proptech-challenge/starter-kit
-
----
-
-Licensed under the [MIT License](LICENSE).
+- The starter-kit data is synthetic challenge data, not live Abu Dhabi market data.
+- The bonus live API is intentionally not implemented.
+- No TabM or deep learning models are used.
+- CatBoost is used for `price_per_sqm` and `development_potential_score`.
+  `estimated_value_aed` remains XGBoost because CatBoost performed worse on the
+  same split.
+- The Next.js route reads `outputs/sample_roi_decision.json`; it does not run Python from the request path.
+- District-only context fields such as `profile`, `base_sale_aed_sqm`, `gross_yield_pct`, and `infrastructure_score` are features, not model targets.

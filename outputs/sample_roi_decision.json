@@ -1,0 +1,25 @@
+{
+  "recommendation": "CONSIDER",
+  "success_score": 74.51,
+  "predicted_price_per_sqm": 7171.61,
+  "predicted_estimated_value_aed": 25756704.0,
+  "predicted_development_potential_score": 73.56,
+  "district_profile": "mid",
+  "district_gross_yield_pct": 8.0,
+  "district_infrastructure_score": 67.0,
+  "total_cost_aed": 23181033.6,
+  "margin_aed": 2575670.4,
+  "margin_pct": 11.11,
+  "reason": "CONSIDER: score 74.5/100 with 11.1% margin, 8.0% district yield, 73.6/100 development potential, and 67.0/100 infrastructure.",
+  "warnings": [
+    "Final recommendation uses transparent rule-based ROI logic, not a trained ROI model."
+  ],
+  "district": "Al Bahia",
+  "parcel_id": "PRC-0280",
+  "land_use": "community",
+  "current_status": "under_development",
+  "acquisition_cost_aed": 18029692.8,
+  "development_cost_aed": 5151340.8,
+  "generated_at": "2026-06-26T05:23:54.135791+00:00",
+  "data_source": "Hugging Face starter-kit CSVs or matching local data/ CSVs"
+}
